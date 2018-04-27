@@ -8,6 +8,8 @@ public abstract class GameModuelBase : MonoBehaviour
 
     protected abstract void Start();
 
+    public abstract void Init();
+
     protected virtual void Update(){}
 
     protected virtual void FixedUpdate(){}
@@ -21,4 +23,9 @@ public abstract class GameModuelBase : MonoBehaviour
     protected virtual void OnDisable(){}
 
     protected abstract void OnDestory();
+
+    protected void Log(ELogType logType, string log)
+    {
+        GameStart.GetInstance().LogModuel.Log(logType, log);
+    }
 }

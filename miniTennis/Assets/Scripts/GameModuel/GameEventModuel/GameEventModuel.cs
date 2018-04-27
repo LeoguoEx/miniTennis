@@ -16,9 +16,16 @@ public class GameEventModuel : GameModuelBase
 
     protected override void Start()
     {
+        Log(ELogType.Normal, "GameEventModuel Start!!!!");
+        
         m_gameEventListeners = new Dictionary<int, GameEventListener>();
         m_events = new List<GameEvent>();
         m_cacheEvents = new List<GameEvent>();
+    }
+
+    public override void Init()
+    {
+        
     }
 
     protected override void OnDestory()
