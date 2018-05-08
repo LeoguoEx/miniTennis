@@ -2,15 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterCollider : MonoBehaviour {
+[RequireComponent(typeof(EntityInstance))]
+public class CharacterCollider : MonoBehaviour
+{
+    private bool m_ballEnter = false;
+    public bool BallEnter
+    {
+        get { return m_ballEnter; }
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        m_ballEnter = CheckBallEnter(other);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        m_ballEnter = CheckBallEnter(other);
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        m_ballEnter = false;
+    }
+
+    private bool CheckBallEnter(Collider2D collider)
+    {
+        return collider != null && collider.gameObject.layer == LayerMask.NameToLayer("Ball");
+    }
 }

@@ -27,12 +27,17 @@ public class GameResModuel : GameModuelBase
 	private List<ResLoadAsyncData> m_cacheResPathList;
 	private bool m_asyncEnd;
 	
-	protected override void Awake()
+	protected void Awake()
 	{
 		
 	}
 
-	protected override void Start()
+	protected void Start()
+	{
+		
+	}
+
+	public override void Init()
 	{
 		Log(ELogType.Normal, "GameResModuel Start!!!!");
 		m_resPathList = new List<ResLoadAsyncData>();
@@ -40,12 +45,7 @@ public class GameResModuel : GameModuelBase
 		m_asyncEnd = true;
 	}
 
-	public override void Init()
-	{
-		
-	}
-
-	protected override void OnDestory()
+	protected void OnDestory()
 	{
 	}
 

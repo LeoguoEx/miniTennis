@@ -10,11 +10,16 @@ public class GameEventModuel : GameModuelBase
 
     private List<GameEvent> m_cacheEvents; 
 
-    protected override void Awake()
+    protected void Awake()
     {
     }
 
-    protected override void Start()
+    protected void Start()
+    {
+        
+    }
+
+    public override void Init()
     {
         Log(ELogType.Normal, "GameEventModuel Start!!!!");
         
@@ -23,12 +28,7 @@ public class GameEventModuel : GameModuelBase
         m_cacheEvents = new List<GameEvent>();
     }
 
-    public override void Init()
-    {
-        
-    }
-
-    protected override void OnDestory()
+    protected void OnDestory()
     {
     }
 
@@ -65,14 +65,13 @@ public class GameEventModuel : GameModuelBase
         m_events.Insert(0, gameEvent);
     }
 
-    protected override void Update()
+    protected void Update()
     {
-        base.Update();
         if (m_events == null || m_events.Count == 0)
         {
             return;
         }
-        for (int i = m_events.Count; i >= 0; i--)
+        for (int i = m_events.Count - 1; i >= 0; i--)
         {
             GameEvent gameEvent = m_events[i];
             if (gameEvent.NeedSendEvent())

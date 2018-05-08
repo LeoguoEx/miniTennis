@@ -13,21 +13,22 @@ public class GameLogModuel : GameModuelBase
 {
 	private List<string> m_logs;
 	
-	protected override void Awake()
+	protected void Awake()
 	{
 	}
 
-	protected override void Start()
+	protected void Start()
 	{
-		Log(ELogType.Normal, "Game Start!!!!");
-		m_logs = new List<string>();
+		
 	}
 
 	public override void Init()
 	{
+		m_logs = new List<string>();
+		Log(ELogType.Normal, "Game Start!!!!");
 	}
 
-	protected override void OnDestory()
+	protected void OnDestory()
 	{
 		WriteLogToFile();
 		Log(ELogType.Normal, "Game End!!!!");

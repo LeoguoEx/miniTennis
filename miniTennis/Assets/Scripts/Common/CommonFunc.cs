@@ -6,7 +6,7 @@ using UnityEngine;
 public static class CommonFunc
 {
     public static T AddSingleComponent<T>(GameObject go)
-        where T : MonoBehaviour
+            where T : Component
     {
         if (go == null)
         {
@@ -58,5 +58,13 @@ public static class CommonFunc
             gameObj.transform.rotation = Quaternion.identity;
             gameObj.transform.localScale = Vector3.one;
         }
+    }
+
+    public static GameObject Instantiate(GameObject temp)
+    {
+        GameObject go = GameObject.Instantiate(temp);
+        go.name = temp.name;
+        go.SetTransformZero();
+        return go;
     }
 }
