@@ -15,18 +15,16 @@ public class Ball : MonoBehaviour
     private SpriteRenderer m_sprite;
 
     [SerializeField]
-    private Vector3 m_speedRate = Vector3.one;
+    private Vector3 m_speedRate = new Vector3(5f, 10f, 15f);
     
     
     [SerializeField]
     private Animator m_animator;
 
-
-    private Vector3 m_moveDirection;
-    
-    private Vector3 m_rotationForce;
-
     private Rigidbody2D m_rigidBody;
+    private float m_speed;
+
+    private Vector3 m_dir;
     
     void Start()
     {
@@ -70,16 +68,6 @@ public class Ball : MonoBehaviour
         }
     }
 
-    private Vector3 Pong(Vector3 normal)
-    {
-        Vector3 pong = normal * 2 + m_moveDirection;
-        
-        //暂时把外力设置为0
-        m_rotationForce = Vector3.zero;
-        
-        return pong;
-    }
-
     private void HandleHitBallMessage(GameEvent eve)
     {
         if (eve != null)
@@ -88,19 +76,18 @@ public class Ball : MonoBehaviour
             PlayAnim("");
 
             EHitForceType forceType = eve.GetParamByIndex<EHitForceType>(0);
-            Vector2 direction = eve.GetParamByIndex<Vector2>(1);
+            m_dir = eve.GetParamByIndex<Vector2>(1);
+            m_speed = GetSpeed(forceType);
 
             if (m_rigidBody != null)
             {
-                Vector2 value = GetForceValue(forceType, direction);
-                m_rigidBody.velocity = Vector2.zero;
-                m_rigidBody.AddForce(value);
+                m_rigidBody.velocity = m_dir.normalized * m_speed;
             }
         }
         
     }
 
-    private Vector2 GetForceValue(EHitForceType forceType, Vector2 direction)
+    private float GetSpeed(EHitForceType forceType)
     {
         float value = m_speedRate.y;
         switch (forceType)
@@ -116,6 +103,24 @@ public class Ball : MonoBehaviour
                    break;
         }
 
-        return direction * value;
+        return value;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other != null && other.gameObject.layer == LayerMask.NameToLayer("Wall"))
+        {
+            ContactPoint2D contactPoint = other.contacts[0];
+            Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
+            newDir.z = 0f;
+            //Quaternion rotation = Quaternion.FromToRotation(m_dir,  newDir);
+            //transform.rotation = rotation;
+            if (m_rigidBody != null)
+            {
+                m_rigidBody.velocity = newDir.normalized * m_speed;
+            }
+
+            m_dir = newDir;
+        }
     }
 }

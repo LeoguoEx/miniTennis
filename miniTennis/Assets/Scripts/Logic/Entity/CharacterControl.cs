@@ -12,7 +12,9 @@ public class CharacterControl : MonoBehaviour
 	
 	private Vector4 m_moveRange = new Vector4(-2.28f, -1.05f, 2.34f, -4.35f);
 
-	public Action<EEntityState> SwitchState;
+	public Action<EEntityState, Vector3> SwitchState;
+
+	private Vector3 m_recordPosition;
 
 	void Start ()
 	{
@@ -47,11 +49,12 @@ public class CharacterControl : MonoBehaviour
 		if (m_entity != null)
 		{
 			m_recordDownPosition = m_entity.transform.position;
+			m_recordPosition = m_entity.transform.position;
 		}
 
 		if (SwitchState != null)
 		{
-			SwitchState(EEntityState.Prepare);
+			SwitchState(EEntityState.Prepare, Vector3.zero);
 		}
 	}
 	
@@ -65,7 +68,10 @@ public class CharacterControl : MonoBehaviour
 
 	void OnFingerStationary(FingerMotionEvent e)
 	{
-		
+		if (m_entity != null)
+		{
+			m_recordPosition = m_entity.transform.position;
+		}
 	}
 	
 	void OnFingerUp( FingerUpEvent e )
@@ -74,7 +80,7 @@ public class CharacterControl : MonoBehaviour
 		
 		if (SwitchState != null)
 		{
-			SwitchState(EEntityState.Hit);
+			SwitchState(EEntityState.Hit, m_recordPosition);
 		}
 	}
 

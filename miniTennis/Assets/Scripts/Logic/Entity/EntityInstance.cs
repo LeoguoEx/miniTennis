@@ -18,6 +18,9 @@ public class EntityInstance : MonoBehaviour
 
     [SerializeField] 
     private GameObject m_forward;
+    
+    private Vector2 m_hitBallRange = new Vector2(-30f, 30f);
+    private Vector2 m_entityMoveRange = new Vector2(-0.05f, 0.05f);
 
     void Start()
     {
@@ -59,7 +62,7 @@ public class EntityInstance : MonoBehaviour
         m_target = target;
     }
     
-    private void Switch(EEntityState state)
+    private void Switch(EEntityState state, Vector3 recordPos)
     {
         GameStart.GetInstance().LogModuel.Log(ELogType.Normal, "Switch State : " + state.ToString());
         //播放对应动画
@@ -73,15 +76,26 @@ public class EntityInstance : MonoBehaviour
                 case EEntityState.Hit:
                     if (m_characterCollider != null && m_characterCollider.BallEnter)
                     {
-                        HitBall();
+                        HitBall(recordPos);
                     }
                     break;
         }
     }
 
-    private void HitBall()
+    private void HitBall(Vector3 recordPos)
     {
         GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
-        eventModuel.SendEvent(GameEventID.ENTITY_HIT_BALL,true, 0f, EHitForceType.Middle, Vector2.up);
+        Vector2 dir = CalculateHitBallDir(recordPos);
+        eventModuel.SendEvent(GameEventID.ENTITY_HIT_BALL, true, 0f, EHitForceType.Middle, new Vector2(dir.x, dir.y));
+    }
+
+    private Vector3 CalculateHitBallDir(Vector3 recordPos)
+    {
+        float a = Mathf.Clamp(transform.position.x - recordPos.x, m_entityMoveRange.x, m_entityMoveRange.y);
+        float b = m_entityMoveRange.y / m_hitBallRange.y;
+        float range = a / b;
+        Vector3 ballMoveDir = Quaternion.AngleAxis(range, Vector3.forward) * Vector3.up;
+        ballMoveDir.z = 0f;
+        return ballMoveDir.normalized;
     }
 }
