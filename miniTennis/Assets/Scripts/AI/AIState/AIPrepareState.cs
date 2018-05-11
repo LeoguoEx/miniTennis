@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AIPrepareState : AIStateBase
 {
-	public AIPrepareState() 
-		: base(EAIStateType.Prepare)
+	public AIPrepareState(EntityInstance entity) 
+		: base(EAIStateType.Prepare, entity)
 	{
 	}
 

@@ -90,6 +90,25 @@ public class GameStart : MonoBehaviour
 
     #endregion
 
+    #region Data
+
+    private GameDataModuel m_dataModuel;
+
+    public GameDataModuel DataModuel
+    {
+        get
+        {
+            if (m_dataModuel == null)
+            {
+                m_dataModuel = gameObject.AddComponent<GameDataModuel>();
+            }
+
+            return m_dataModuel;
+        }
+    }
+
+    #endregion
+
     void Start()
     {
         m_instance = this;

@@ -13,17 +13,21 @@ public enum EAIStateType
 	None = 5,
 }
 
-public abstract class AIStateBase 
+public abstract class AIStateBase
 {
+	private EAIStateType m_statetype;
 	public EAIStateType StateType
 	{
 		get;
 		protected set;
 	}
+
+	protected EntityInstance m_entity;
     
-	public AIStateBase(EAIStateType stateType)
+	public AIStateBase(EAIStateType stateType, EntityInstance entity)
 	{
-        
+		m_statetype = stateType;
+		m_entity = entity;
 	}
 
 	public virtual void PreEnterState()

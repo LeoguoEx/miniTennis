@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class AIStateController : MonoBehaviour
@@ -10,15 +9,19 @@ public class AIStateController : MonoBehaviour
 
     private void Start()
     {
+        EntityInstance instance = gameObject.GetComponent<EntityInstance>();
         m_aiStateDic = new Dictionary<int, AIStateBase>();
-        m_aiStateDic.Add((int)EAIStateType.Idle, new AIIdleState());
-        m_aiStateDic.Add((int)EAIStateType.FireBall, new AIFireBallState());
-        m_aiStateDic.Add((int)EAIStateType.GotoHitTarget, new AIGoHitTargetState());
-        m_aiStateDic.Add((int)EAIStateType.Hit, new AIHitState());
-        m_aiStateDic.Add((int)EAIStateType.Prepare, new AIPrepareState());
+        m_aiStateDic.Add((int)EAIStateType.Idle, new AIIdleState(instance));
+        m_aiStateDic.Add((int)EAIStateType.FireBall, new AIFireBallState(instance));
+        m_aiStateDic.Add((int)EAIStateType.GotoHitTarget, new AIGoHitTargetState(instance));
+        m_aiStateDic.Add((int)EAIStateType.Hit, new AIHitState(instance));
+        m_aiStateDic.Add((int)EAIStateType.Prepare, new AIPrepareState(instance));
 
         m_curAIStateType = EAIStateType.None;
         SwitchState(EAIStateType.Idle);
+
+        GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
+        eventModuel.RegisterEventListener(GameEventID.AI_SWITCH_STATE, HandleSwitchState);
     }
 
     public void SwitchState(EAIStateType stateType)
@@ -33,7 +36,7 @@ public class AIStateController : MonoBehaviour
             m_curStateBase.ExitState();
         }
 
-        m_aiStateDic.TryGetValue((int) m_curAIStateType, out m_curStateBase);
+        m_aiStateDic.TryGetValue((int) stateType, out m_curStateBase);
         if (m_curStateBase != null)
         {
             m_curStateBase.PreEnterState();
@@ -47,6 +50,20 @@ public class AIStateController : MonoBehaviour
         if (m_curStateBase != null)
         {
             m_curStateBase.UpdateState();
+        }
+    }
+
+    private void HandleSwitchState(GameEvent eve)
+    {
+        EAIStateType state = eve.GetParamByIndex<EAIStateType>(0);
+        SwitchState(state);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other != null && other.gameObject.layer == LayerMask.NameToLayer("Ball"))
+        {
+            SwitchState(EAIStateType.FireBall);
         }
     }
 }

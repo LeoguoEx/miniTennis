@@ -9,12 +9,12 @@ public class CharacterControl : MonoBehaviour
 	private float m_moveSpeed = 0.1f;
 	private Vector2 m_downPosition;
 	private Vector3 m_recordDownPosition;
-	
-	private Vector4 m_moveRange = new Vector4(-2.28f, -1.05f, 2.34f, -4.35f);
 
 	public Action<EEntityState, Vector3> SwitchState;
 
 	private Vector3 m_recordPosition;
+
+	public Action<Vector3> MoveEntityAction;
 
 	void Start ()
 	{
@@ -63,7 +63,12 @@ public class CharacterControl : MonoBehaviour
 		GameStart.GetInstance().LogModuel.Log(ELogType.Normal, "OnFingerMove    :  " + (e.Position * m_moveSpeed).ToString());
 		Vector2 fingerDir = e.Position - m_downPosition;
 		Vector3 entityMovePosition = m_recordDownPosition + new Vector3(fingerDir.x, fingerDir.y, 0f) * m_moveSpeed;
-		m_entity.transform.position = CheckOutofRange(entityMovePosition);
+		
+		if (MoveEntityAction != null)
+		{
+			MoveEntityAction(entityMovePosition);
+		}
+		//m_entity.transform.position = CheckOutofRange(entityMovePosition);
 	}
 
 	void OnFingerStationary(FingerMotionEvent e)
@@ -82,12 +87,5 @@ public class CharacterControl : MonoBehaviour
 		{
 			SwitchState(EEntityState.Hit, m_recordPosition);
 		}
-	}
-
-	private Vector3 CheckOutofRange(Vector3 point)
-	{
-		point.x = Mathf.Clamp(point.x, m_moveRange.x, m_moveRange.z);
-		point.y = Mathf.Clamp(point.y, m_moveRange.w, m_moveRange.y);
-		return point;
 	}
 }

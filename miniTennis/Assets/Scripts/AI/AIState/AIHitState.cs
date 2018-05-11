@@ -5,8 +5,8 @@ using UnityEngine;
 public class AIHitState : AIStateBase
 {
 
-	public AIHitState()
-		: base(EAIStateType.Hit)
+	public AIHitState(EntityInstance entity)
+		: base(EAIStateType.Hit, entity)
 	{
 	}
 
