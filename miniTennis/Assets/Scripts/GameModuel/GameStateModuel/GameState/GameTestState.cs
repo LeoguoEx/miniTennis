@@ -8,6 +8,7 @@ public class GameTestState : GameStateBase
     private Ball m_ball;
     private EntityInstance m_entityInstance;
     private EntityInstance m_aiInstance;
+    private GameTestStateUI m_ui;
 
     public Action<EGameStateType> SwitchStateAction;
     
