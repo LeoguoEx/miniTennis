@@ -7,6 +7,19 @@ public static class GameResFunc
 
     public static string GetResPath(EResourceType resType, string name)
     {
+        switch (resType)
+        {
+                case EResourceType.AnimController:
+                    return string.Format("Entity/Anim/Character/{0}", name);
+                case EResourceType.Ball:
+                    return string.Format("Ball/{0}", name);
+                case EResourceType.Ground:
+                    return string.Format("Ground/Prefab/{0}", name);
+                case EResourceType.Role:
+                    return string.Format("Entity/Prefab/{0}", name);
+                case EResourceType.UI:
+                    return name;
+        }
         return name;
     }
 }

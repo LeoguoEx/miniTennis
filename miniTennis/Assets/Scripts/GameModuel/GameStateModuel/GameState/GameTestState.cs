@@ -9,8 +9,6 @@ public class GameTestState : GameStateBase
     private EntityInstance m_entityInstance;
     private EntityInstance m_aiInstance;
     private GameTestStateUI m_ui;
-
-    public Action<EGameStateType> SwitchStateAction;
     
     public GameTestState(EGameStateType stateType) 
         : base(stateType)
@@ -28,6 +26,7 @@ public class GameTestState : GameStateBase
         if (ball != null)
         {
             m_ball = CommonFunc.AddSingleComponent<Ball>(ball);
+            m_ball.Reset();
         }
         
         GameObject chracter  =GameObject.Find("Character");
@@ -35,7 +34,7 @@ public class GameTestState : GameStateBase
         {
             m_entityInstance = chracter.GetComponent<EntityInstance>();
 	
-            Vector4 moveRange = new Vector4(-2.28f, -1.05f, 2.34f, -4.35f);
+            Vector4 moveRange = new Vector4(-1.73f, -0.81f, 3.15f, -5.4f);
             m_entityInstance.SetMoveRange(moveRange);
         }
 
@@ -44,13 +43,19 @@ public class GameTestState : GameStateBase
         if (ai != null)
         {
             m_aiInstance = ai.GetComponent<EntityInstance>();
-            Vector4 moveRange = new Vector4(-2.6f, 7.77f, 2.64f, 3.95f);
+            Vector4 moveRange = new Vector4(-2.09f, 9.3f, 2.61f, 4.61f);
             m_aiInstance.SetMoveRange(moveRange);
             ai.AddComponent<AIStateController>();
         }
 
         GameDataModuel dataModuel = GameStart.GetInstance().DataModuel;
         dataModuel.SetGameData(3, 0);
+
+        m_ui = GameObject.FindObjectOfType<GameTestStateUI>();
+        if (m_ui != null)
+        {
+            m_ui.Init();
+        }
     }
 
     public override void UpdateState()
@@ -66,10 +71,6 @@ public class GameTestState : GameStateBase
 
     private void HandleResetStateEvent(GameEvent eve)
     {
-        GameDataModuel dataModuel = GameStart.GetInstance().DataModuel;
-        dataModuel.ReduceHeart();
-        
-
         if (m_aiInstance != null)
         {
             m_aiInstance.ResetStartPosition();
@@ -81,6 +82,7 @@ public class GameTestState : GameStateBase
             }
         }
         
+        GameDataModuel dataModuel = GameStart.GetInstance().DataModuel;
         if (dataModuel.m_heart <= 0)
         {
             if (SwitchStateAction != null)

@@ -21,15 +21,25 @@ public class GameDataModuel : GameModuelBase
 	public void ReduceHeart()
 	{
 		m_heart--;
+		m_heart = Mathf.Clamp(m_heart, 0, 6);
+		SendEvent();
 	}
 
 	public void AddHeart()
 	{
 		m_heart++;
+		SendEvent();
 	}
 
 	public void AddHitCount()
 	{
 		m_hitCount++;
+		SendEvent();
+	}
+
+	private void SendEvent()
+	{
+		GameEventModuel moduel = GameStart.GetInstance().EventModuel;
+		moduel.SendEvent(GameEventID.GAME_DATA_CHANGE, true, 0f);
 	}
 }

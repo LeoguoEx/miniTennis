@@ -15,9 +15,9 @@ public class Ball : MonoBehaviour
     private SpriteRenderer m_sprite;
 
     [SerializeField]
-    private Vector3 m_speedRate = new Vector3(5f, 10f, 20f);
+    private Vector3 m_speedRate = new Vector3(7f, 10f, 20f);
     
-    private Vector3 m_startPosition = new Vector3(-0f, 0.81f, 0f);
+    private Vector3 m_startPosition = new Vector3(-0.00394f, 0.81f, 0f);
     
     
     [SerializeField]
@@ -51,13 +51,11 @@ public class Ball : MonoBehaviour
         {
             m_particle.gameObject.SetActive(false);
         }
-
-        m_startPosition = gameObject.transform.position;
     }
 
     public void Reset()
     {
-        gameObject.transform.position = m_startPosition;
+        gameObject.transform.localPosition = m_startPosition;
         if (m_particle != null)
         {
             m_particle.gameObject.SetActive(false);
@@ -72,15 +70,15 @@ public class Ball : MonoBehaviour
     private void OnEnable()
     {
         GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
-        eventModuel.RegisterEventListener(GameEventID.ENTITY_HIT_BALL, HandleHitBallMessage);
-        eventModuel.RegisterEventListener(GameEventID.AI_HIT_BALL, HandleHitBallMessage);
+        eventModuel.RegisterEventListener(GameEventID.ENTITY_HIT_BALL, HandleEntityHitBallMessage);
+        eventModuel.RegisterEventListener(GameEventID.AI_HIT_BALL, HandleAIHitBallMessage);
     }
 
     private void OnDisable()
     {
         GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
-        eventModuel.UnRegisterEventListener(GameEventID.ENTITY_HIT_BALL, HandleHitBallMessage);
-        eventModuel.UnRegisterEventListener(GameEventID.AI_HIT_BALL, HandleHitBallMessage);
+        eventModuel.UnRegisterEventListener(GameEventID.ENTITY_HIT_BALL, HandleEntityHitBallMessage);
+        eventModuel.UnRegisterEventListener(GameEventID.AI_HIT_BALL, HandleAIHitBallMessage);
     }
 
     private void Update()
@@ -108,6 +106,16 @@ public class Ball : MonoBehaviour
         }
     }
 
+    private void HandleEntityHitBallMessage(GameEvent eve)
+    {
+        HandleHitBallMessage(eve);
+    }
+
+    private void HandleAIHitBallMessage(GameEvent eve)
+    {
+        HandleHitBallMessage(eve);
+    }
+
     private void HandleHitBallMessage(GameEvent eve)
     {
         if (eve != null)
@@ -129,7 +137,6 @@ public class Ball : MonoBehaviour
                 m_particle.gameObject.SetActive(true);
             }
         }
-        
     }
 
     private float GetSpeed(EHitForceType forceType)
@@ -171,6 +178,16 @@ public class Ball : MonoBehaviour
             }
             else if (other.gameObject.layer == LayerMask.NameToLayer("Boundary"))
             {
+                GameDataModuel dataModuel = GameStart.GetInstance().DataModuel;
+                if (gameObject.transform.localPosition.y > 0)
+                {
+                    dataModuel.AddHeart();
+                }
+                else
+                {
+                    dataModuel.ReduceHeart();
+                }
+                
                 GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
                 if (eventModuel != null)
                 {

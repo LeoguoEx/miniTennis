@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ public abstract class GameStateBase
         get;
         protected set;
     }
+
+    public Action<EGameStateType> SwitchStateAction;
     
     public GameStateBase(EGameStateType stateType)
     {

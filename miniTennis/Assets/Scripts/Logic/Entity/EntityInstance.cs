@@ -11,6 +11,7 @@ public class EntityInstance : MonoBehaviour
 {
     protected CharacterAnim m_characterAnim;
     protected CharacterCollider m_characterCollider;
+    protected CharacterCollider m_batCollider;
     protected CharacterControl m_characterControl;
     
     [SerializeField]
@@ -28,7 +29,9 @@ public class EntityInstance : MonoBehaviour
     void Start()
     {
         m_characterAnim = new CharacterAnim(gameObject);
-        m_characterCollider = gameObject.AddComponent<CharacterCollider>();
+        m_characterCollider = gameObject.GetComponent<CharacterCollider>();
+        GameObject bat = CommonFunc.GetChild(gameObject, "Bat");
+        m_batCollider = CommonFunc.AddSingleComponent<CharacterCollider>(bat);
         m_characterControl= gameObject.GetComponentInChildren<CharacterControl>();
         if (m_characterControl != null)
         {
@@ -96,7 +99,7 @@ public class EntityInstance : MonoBehaviour
         switch (state)
         {
                 case EEntityState.Hit:
-                    if (m_characterCollider != null && m_characterCollider.BallEnter)
+                    if ((m_characterCollider != null && m_characterCollider.BallEnter) || (m_batCollider != null && m_batCollider.BallEnter))
                     {
                         HitBall(recordPos);
                     }

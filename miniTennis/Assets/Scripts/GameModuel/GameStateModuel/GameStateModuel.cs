@@ -15,14 +15,17 @@ public class GameStateModuel : GameModuelBase
 		m_stateDic.Add((int)EGameStateType.GameExerciseState, new GameExerciseState(EGameStateType.GameExerciseState));
 		m_stateDic.Add((int)EGameStateType.GameContestState, new GameContestState(EGameStateType.GameContestState));
 		m_stateDic.Add((int)EGameStateType.GameMenuState, new GameMenuState(EGameStateType.GameMenuState));
+
+		foreach (int id in m_stateDic.Keys)
+		{
+			m_stateDic[id].SwitchStateAction = SwitchState;
+		}
 		
 		SwitchState(EGameStateType.GameTestState);
 	}
 
 	public void SwitchState(EGameStateType stateType)
 	{
-		if(m_curStateType == stateType){return;}
-
 		if (m_curState != null)
 		{
 			m_curState.PreExitState();

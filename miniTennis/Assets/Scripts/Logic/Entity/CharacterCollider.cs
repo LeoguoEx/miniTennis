@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(EntityInstance))]
 public class CharacterCollider : MonoBehaviour
 {
     private bool m_ballEnter = false;
