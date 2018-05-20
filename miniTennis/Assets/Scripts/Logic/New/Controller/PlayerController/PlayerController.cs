@@ -49,11 +49,20 @@ public class PlayerController : PlayerControllerBase
 		if (m_player != null)
 		{
 			m_playerPosition = m_player.GetPlayerPosition();
-		}
-	}
+	    }
+	    m_fingerDownPosition = e.Position;
+	    if (m_player != null)
+	    {
+	        m_player.SetMoveDirection(Vector2.zero);
+        }
+    }
 	
 	void OnFingerUp( FingerUpEvent e )
 	{
 		m_fingureDown = false;
+	    if (m_player != null)
+	    {
+	        m_player.EndMove();
+        }
 	}
 }

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate GameObject DGetCurPlayerTarget();
-
 public delegate void DHitBallDelegate(Vector2 direction, float force);
 
 public class Player
@@ -14,9 +12,10 @@ public class Player
     private PlayerData m_playerData;
 
     private Vector2 m_playerMoveDirection;
-
-    private DGetCurPlayerTarget m_targetCall;
     private DHitBallDelegate m_hitBallCallBack;
+
+    public PlayerData PlayerData { get { return m_playerData; } }
+    public Transform Transform { get { return m_avatar.transform; } }
     
     public Player(PlayerData playerData)
     {
@@ -34,6 +33,8 @@ public class Player
             m_anim.InitAnimator(playerData.m_animControllerName);
             
             m_collider = new PlayerCollider(playerData.m_moveArea, playerData.m_radius, playerData.m_angle);
+
+            MovePosition(m_playerData.m_bornPosition);
         }
     }
 
@@ -47,13 +48,11 @@ public class Player
 
         m_anim = null;
         m_collider = null;
-        m_targetCall = null;
         m_hitBallCallBack = null;
     }
 
-    public void InitPlayerAction(DGetCurPlayerTarget targetCall, DHitBallDelegate hitBallCall)
+    public void InitPlayerAction(DHitBallDelegate hitBallCall)
     {
-        m_targetCall = targetCall;
         m_hitBallCallBack = hitBallCall;
     }
 
@@ -77,10 +76,17 @@ public class Player
 
     public void MovePosition(Vector2 position)
     {
+        position.x = Mathf.Clamp(position.x, m_playerData.m_moveArea.x, m_playerData.m_moveArea.width);
+        position.y = Mathf.Clamp(position.y, m_playerData.m_moveArea.height, m_playerData.m_moveArea.y);
         if (m_avatar != null)
         {
             m_avatar.Move(position);
         }
+    }
+
+    private void AdjustMoveRange(Vector2 position)
+    {
+        
     }
 
     private void FireBall()
@@ -115,20 +121,13 @@ public class Player
 
     private void HitBall()
     {
-        if (m_targetCall != null && m_collider != null)
+        Vector3 dir = m_playerMoveDirection.normalized;
+        float angle = m_playerData.GetFireBallAngle(dir.x);
+        Vector2 direction = m_collider.GetHitBallDirection(angle, m_avatar.transform.rotation * Vector3.up);
+        float force = m_playerData.GetFireBallForce(m_playerMoveDirection.y);
+        if (m_hitBallCallBack != null)
         {
-            GameObject target = m_targetCall();
-            if (target != null)
-            {
-                bool isInArea = m_collider.CheckInHitBallArea(target.transform, m_avatar.transform);
-                if (isInArea)
-                {
-                    Vector2 playerToBallDir = target.transform.position - m_avatar.GetPosition();
-                    Vector2 direction = m_collider.GetHitBallDirection(m_playerMoveDirection, playerToBallDir);
-                    float force = m_playerData.GetFireBallForce(m_playerMoveDirection, playerToBallDir);
-                    m_hitBallCallBack(direction, force);
-                }
-            }
+            m_hitBallCallBack(direction, force);
         }
     }
 }

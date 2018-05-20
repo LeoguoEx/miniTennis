@@ -11,6 +11,7 @@ public enum EResourceType
 	AnimController = 4,
 	Effect = 5,
 	Ground = 6,
+    BallMechine = 7,
 }
 
 public delegate void DLoadResourcesCompete(UnityEngine.Object res);

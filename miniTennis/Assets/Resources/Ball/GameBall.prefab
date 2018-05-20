@@ -20,8 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4675505844474144}
   - component: {fileID: 212350045376620878}
-  - component: {fileID: 61652180903097050}
-  - component: {fileID: 50538244380501460}
   m_Layer: 8
   m_Name: Ball
   m_TagString: Untagged
@@ -37,6 +35,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4403174478778608}
+  - component: {fileID: 61991800689870596}
+  - component: {fileID: 50923272238991890}
   m_Layer: 8
   m_Name: GameBall
   m_TagString: Untagged
@@ -102,13 +102,13 @@ Transform:
   m_Father: {fileID: 4403174478778608}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &50538244380501460
+--- !u!50 &50923272238991890
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1045330133377796}
+  m_GameObject: {fileID: 1489185462168032}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -122,12 +122,12 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!61 &61652180903097050
+--- !u!61 &61991800689870596
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1045330133377796}
+  m_GameObject: {fileID: 1489185462168032}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -207,7 +207,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1242409357
+  randomSeed: 1047620039
   InitialModule:
     serializedVersion: 3
     enabled: 1

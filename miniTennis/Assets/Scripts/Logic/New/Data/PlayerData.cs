@@ -14,19 +14,41 @@ public class PlayerData
     public float m_angle;
 
     public float m_moveSpeed;
+    public Vector2 m_bornPosition;
 
     private Vector2 m_firBallForceRange;
-    
+    private float m_fireBallAngleRange;
+    private float m_playerMoveXRange;
+    private float m_playerForceY;
+
     public PlayerData()
     {
-        
+        m_playerId = "Player";
+        m_playerName = "CocoPlay";
+        m_playerResPath = "Player";
+        m_animControllerName = "Character";
+
+        m_moveArea = new Rect(-4.57f, -1.5f, 4.64f, -9.52f);
+        m_radius = 3f;
+        m_angle = 120;
+        m_moveSpeed = 0.04f;
+        m_firBallForceRange = new Vector2(7f, 15f);
+        m_bornPosition = new Vector2(0f, -5.76f);
+        m_fireBallAngleRange = 60f;
+        m_playerMoveXRange = 1.5f;
+        m_playerForceY = 2;
     }
 
-    public float GetFireBallForce(Vector2 direction, Vector2 playerToTargetDirection)
+    public float GetFireBallForce(float y)
     {
-        float value = Vector2.Dot(direction, playerToTargetDirection);
-        value = Mathf.Abs(value);
-        value = Mathf.Abs(1 - value);
+        float value = y / m_playerForceY;
         return Mathf.Lerp(m_firBallForceRange.x, m_firBallForceRange.y, value);
+    }
+
+    public float GetFireBallAngle(float x)
+    {
+        float value = x / m_playerMoveXRange;
+        float angle = m_fireBallAngleRange * value;
+        return angle;
     }
 }

@@ -10,7 +10,7 @@ public static class GameResFunc
         switch (resType)
         {
                 case EResourceType.AnimController:
-                    return string.Format("Entity/Anim/Character/{0}", name);
+                    return string.Format("Entity/Anim/{0}", name);
                 case EResourceType.Ball:
                     return string.Format("Ball/{0}", name);
                 case EResourceType.Ground:
@@ -19,6 +19,8 @@ public static class GameResFunc
                     return string.Format("Entity/Prefab/{0}", name);
                 case EResourceType.UI:
                     return name;
+                case EResourceType.BallMechine:
+                    return string.Format("BallMechine/Prefab/{0}", name);
         }
         return name;
     }

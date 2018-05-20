@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameBall
 {
     private GameBallAnim m_ballAnim;
-    private GameBallCollider m_ballCollider;
     private GameBallInstance m_ballInstance;
     
     public GameBall()
@@ -16,16 +15,15 @@ public class GameBall
         if (ball != null)
         {
             m_ballAnim = new GameBallAnim();
-            m_ballCollider = ball.AddComponent<GameBallCollider>();
             m_ballInstance = ball.AddComponent<GameBallInstance>();
         }
     }
 
-    public void SetVelocity(Vector2 velocity)
+    public void SetVelocity(Vector2 dir, float force)
     {
         if (m_ballInstance != null)
         {
-            m_ballInstance.SetVelocity(velocity);
+            m_ballInstance.SetVelocity(dir, force);
         }
     }
 
@@ -37,5 +35,13 @@ public class GameBall
         }
 
         return null;
+    }
+
+    public void SetPosition(Vector2 pos)
+    {
+        if (m_ballInstance != null)
+        {
+            m_ballInstance.SetPosition(pos);
+        }
     }
 }

@@ -23,7 +23,7 @@ public abstract class GameStateBase
     
     public GameStateBase(EGameStateType stateType)
     {
-        
+        StateType = stateType;
     }
 
     public virtual void PreEnterState()
