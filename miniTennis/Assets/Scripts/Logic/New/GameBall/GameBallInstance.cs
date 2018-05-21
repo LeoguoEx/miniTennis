@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ public class GameBallInstance : MonoBehaviour
 
     private float m_force;
     private Vector3 m_dir;
+	private Rect m_getBallRect;
+
+	public Action BallOutofRangeAction = null;
 	
 	void Start ()
 	{
@@ -33,6 +37,30 @@ public class GameBallInstance : MonoBehaviour
 	    SetParticleActive(false);
 	}
 
+	void Update()
+	{
+		if (CheckOutOfRange() && BallOutofRangeAction != null)
+		{
+			BallOutofRangeAction();
+		}
+	}
+
+	public void SetBallRect(Rect rect)
+	{
+		m_getBallRect = rect;
+	}
+
+	private bool CheckOutOfRange()
+	{
+		Vector3 position = transform.position;
+		if (position.x < m_getBallRect.x || position.x > m_getBallRect.width ||
+		    position.y < m_getBallRect.y || position.y > m_getBallRect.height)
+		{
+			return true;
+		}
+		return false;
+	}
+
 	public void SetVelocity(Vector2 dir, float force)
 	{
 	    m_force = force;
@@ -40,6 +68,7 @@ public class GameBallInstance : MonoBehaviour
 
         if (m_rigidBody != null)
 		{
+			m_rigidBody.velocity = Vector2.zero;
 		    m_rigidBody.velocity = dir * force;
 		}
 	}

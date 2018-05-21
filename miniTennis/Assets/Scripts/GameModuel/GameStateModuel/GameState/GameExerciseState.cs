@@ -10,8 +10,8 @@ public class GameExerciseState : GameStateBase
 	private Ground m_ground;
     private BallMechine m_ballMechine;
 
-    private List<GameBall> m_ballList;
-    private List<GameBall> m_cacheBallList;
+	private float m_time = 0f;
+	private float m_rate = 3f;
 
     public GameExerciseState(EGameStateType stateType) : base(stateType)
 	{
@@ -20,10 +20,7 @@ public class GameExerciseState : GameStateBase
 
 	public override void EnterState()
 	{
-	    m_ballList = new List<GameBall>();
-        m_cacheBallList = new List<GameBall>();
-
-        GameObject ground = GameStart.GetInstance().ResModuel.LoadResources<GameObject>(EResourceType.Ground, "Ground");
+		GameObject ground = GameStart.GetInstance().ResModuel.LoadResources<GameObject>(EResourceType.Ground, "Ground");
 	    ground = CommonFunc.Instantiate(ground);
 	    m_ground = CommonFunc.AddSingleComponent<Ground>(ground);
         GroundData groundData = new GroundData();
@@ -36,9 +33,22 @@ public class GameExerciseState : GameStateBase
 		GameObject go = new GameObject("Controller");
 		m_playerController = go.AddComponent<PlayerController>();
 		m_playerController.InitController(m_palyer);
-
+		
         BallMechineData mechineData = new BallMechineData();
-        m_ballMechine = new BallMechine(mechineData);
+		BallData ballData = new BallData();
+        m_ballMechine = new BallMechine(mechineData, ballData, m_ground.GetLeftPoint(), m_ground.GetRightPoint());
+		
+		CoroutineTool.GetInstance().StartGameCoroutine(StartCoroutine());
+	}
+
+	private IEnumerator StartCoroutine()
+	{
+		yield return new WaitForSeconds(3f);
+
+		if (m_ballMechine != null)
+		{
+			m_ballMechine.StartEvent();
+		}
 	}
 
 	public override void UpdateState()
@@ -48,12 +58,35 @@ public class GameExerciseState : GameStateBase
 
 	public override void ExitState()
 	{
-		
+		if (m_ground != null)
+		{
+			GameObject.Destroy(m_ground.gameObject);
+			m_ground = null;
+		}
+
+		if (m_palyer != null)
+		{
+			m_palyer.Destroy();
+			m_palyer = null;
+		}
+
+		if (m_playerController != null)
+		{
+			m_playerController.DestroyController();
+			m_playerController = null;
+		}
+
+		if (m_ballMechine != null)
+		{
+			m_ballMechine.Destory();
+			m_ballMechine = null;
+		}
 	}
 
 	private void HitBallDelegate(Vector2 direction, float force)
 	{
-        GameBall[] balls = GetInPlayerAreaBalls();
+		if(m_ballMechine == null){return;}
+        GameBall[] balls = m_ballMechine.GetInPlayerAreaBalls(m_palyer);
         if(balls == null || balls.Length == 0) { return; }
 	    for (int i = 0; i < balls.Length; i++)
 	    {
@@ -61,38 +94,4 @@ public class GameExerciseState : GameStateBase
 
         }
 	}
-
-    private GameBall CreateGameBall()
-    {
-        GameBall ball = null;
-        if (m_cacheBallList.Count > 0)
-        {
-            ball = m_cacheBallList[0];
-            m_cacheBallList.RemoveAt(0);
-        }
-        else
-        {
-            ball = new GameBall();
-        }
-        m_ballList.Add(ball);
-        return ball;
-    }
-
-    private List<GameBall> m_checkBalls;
-    private GameBall[] GetInPlayerAreaBalls()
-    {
-        if(m_checkBalls == null) { m_checkBalls = new List<GameBall>();}
-        m_checkBalls.Clear();
-        for (int i = 0; i < m_ballList.Count; i++)
-        {
-            GameBall ball = m_ballList[i];
-            bool inarea = PlayerCollider.CheckInHitBallArea(ball.GetBallInstance().transform, m_palyer.Transform,
-                m_palyer.PlayerData.m_radius, m_palyer.PlayerData.m_angle);
-            if (inarea)
-            {
-                m_checkBalls.Add(ball);
-            }
-        }
-        return m_checkBalls.ToArray();
-    }
 }
