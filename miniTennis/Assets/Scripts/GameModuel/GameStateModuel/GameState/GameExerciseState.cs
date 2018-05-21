@@ -27,7 +27,7 @@ public class GameExerciseState : GameStateBase
 	    m_ground.InitGround(groundData);
 		
 		PlayerData playerData = new PlayerData();
-		m_palyer = new Player(playerData);
+		m_palyer = new Player(1, playerData);
 		m_palyer.InitPlayerAction(HitBallDelegate);
 		
 		GameObject go = new GameObject("Controller");
@@ -83,7 +83,7 @@ public class GameExerciseState : GameStateBase
 		}
 	}
 
-	private void HitBallDelegate(Vector2 direction, float force)
+	private void HitBallDelegate(Vector2 direction, float force, int id)
 	{
 		if(m_ballMechine == null){return;}
         GameBall[] balls = m_ballMechine.GetInPlayerAreaBalls(m_palyer);

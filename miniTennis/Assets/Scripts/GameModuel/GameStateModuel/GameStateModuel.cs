@@ -21,7 +21,7 @@ public class GameStateModuel : GameModuelBase
 			m_stateDic[id].SwitchStateAction = SwitchState;
 		}
 		
-		SwitchState(EGameStateType.GameExerciseState);
+		SwitchState(EGameStateType.GameContestState);
 	}
 
 	public void SwitchState(EGameStateType stateType)

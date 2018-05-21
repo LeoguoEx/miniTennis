@@ -64,6 +64,15 @@ public class GameBall
         return null;
     }
 
+    public Vector3 GetPosition()
+    {
+        if (m_ballInstance != null)
+        {
+            return m_ballInstance.transform.position;
+        }
+        return Vector3.zero;
+    }
+
     public void SetPosition(Vector2 pos)
     {
         if (m_ballInstance != null)

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void DHitBallDelegate(Vector2 direction, float force);
+public delegate void DHitBallDelegate(Vector2 direction, float force, int id);
 
 public class Player
 {
+    private int m_id;
     private PlayerAvatar m_avatar;
     private PlayerAnim m_anim;
     private PlayerCollider m_collider;
@@ -16,17 +17,20 @@ public class Player
 
     public PlayerData PlayerData { get { return m_playerData; } }
     public Transform Transform { get { return m_avatar.transform; } }
+    public int ID { get { return m_id; } }
     
-    public Player(PlayerData playerData)
+    public Player(int id, PlayerData playerData)
     {
         if(playerData == null){return;}
         m_playerData = playerData;
-        
+        m_id = id;
+
         GameResModuel resModuel = GameStart.GetInstance().ResModuel;
         GameObject player = resModuel.LoadResources<GameObject>(EResourceType.Role, playerData.m_playerResPath);
         player = CommonFunc.Instantiate(player);
         if (player != null)
         {
+            player.name = playerData.m_playerName;
             m_avatar = player.AddComponent<PlayerAvatar>();
             
             m_anim = new PlayerAnim(player);
@@ -59,6 +63,14 @@ public class Player
     public void SetMoveDirection(Vector2 direction)
     {
         m_playerMoveDirection = direction;
+    }
+
+    public void SetIdle()
+    {
+        if (m_anim != null)
+        {
+            m_anim.PlayAnim(EEntityState.Idle);
+        }
     }
 
     public void StartMove()
@@ -127,7 +139,7 @@ public class Player
         float force = m_playerData.GetFireBallForce(m_playerMoveDirection.y);
         if (m_hitBallCallBack != null)
         {
-            m_hitBallCallBack(direction, force);
+            m_hitBallCallBack(direction, force, ID);
         }
     }
 }

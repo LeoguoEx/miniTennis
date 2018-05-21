@@ -26,7 +26,7 @@ public class GameContestState : GameStateBase
 		m_ground.InitGround(groundData);
 		
 		PlayerData playerData = new PlayerData();
-		m_palyer = new Player(playerData);
+		m_palyer = new Player(1, playerData);
 		m_palyer.InitPlayerAction(HitBallDelegate);
 		
 		GameObject go = new GameObject("Controller");
@@ -35,13 +35,16 @@ public class GameContestState : GameStateBase
 		
 		BallData ballData = new BallData();
 		m_gameBall = new GameBall(ballData);
+        m_gameBall.SetPosition(groundData.GetFireBallPoint(ESeriveSide.Player));
 		
-		playerData = new PlayerData();
-		m_ai = new Player(playerData);
+		AIPlayerData aiData = new AIPlayerData();
+		m_ai = new Player(2, aiData);
+        m_ai.Transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, 180f));
 		m_ai.InitPlayerAction(HitBallDelegate);
 
 		m_aiController = go.AddComponent<AIController>();
-		m_aiController.InitController(m_ai);
+	    m_aiController.SetGameBall(m_gameBall);
+        m_aiController.InitController(m_ai);
 	}
 
 	public override void UpdateState()
@@ -82,13 +85,21 @@ public class GameContestState : GameStateBase
 		}
 	}
 	
-	private void HitBallDelegate(Vector2 direction, float force)
+	private void HitBallDelegate(Vector2 direction, float force, int id)
 	{
 		if(m_gameBall == null){return;}
 
-		if (m_gameBall != null)
-		{
-			m_gameBall.SetVelocity(direction, force);
-		}
+	    bool checkIsHitArea = PlayerCollider.CheckInHitBallArea(m_gameBall.GetBallInstance().transform, m_palyer.Transform,
+	        m_palyer.PlayerData.m_radius, m_palyer.PlayerData.m_angle);
+	    if (checkIsHitArea)
+	    {
+	        if (m_gameBall != null)
+	        {
+	            m_gameBall.SetVelocity(direction, force);
+	        }
+
+	        GameEventModuel meoduel = GameStart.GetInstance().EventModuel;
+	        meoduel.SendEvent(GameEventID.PLAYER_HIT_BALL, true, 0f, id);
+        }
 	}
 }

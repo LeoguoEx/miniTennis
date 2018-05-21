@@ -18,6 +18,11 @@ public class GameEventID
 
     public const int Reset_Game_State = 201;
     public const int GAME_DATA_CHANGE = 202;
+
+
+    public const int New_Start = 300;
+    public const int PLAYER_HIT_BALL = 301;
+    public const int New_End = 400;
     
     public const int GAME_EVENT_END = 99999;
 }

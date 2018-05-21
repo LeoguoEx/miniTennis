@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,27 +7,28 @@ public enum EAIControlState
 {
 	Idle = 0,				//静止等待
 	ChasingBall = 1,		//追求
-	Prepare = 2,			//准备击球
-	Hit = 3,				//击球
-	FireBall= 4,			//开球
+	Hit = 2,				//击球
+	FireBall= 3,			//开球
+    BackToBornPoint = 4,    //回到起始点
 	
 	None = 5,
 }
 
 public abstract class AIControlState 
 {
-	private EAIControlState m_statetype;
+	protected EAIControlState m_statetype;
 	public EAIControlState StateType
 	{
-		get;
-		protected set;
+        get { return m_statetype; }
+		protected set { m_statetype = value; }
 	}
 
 	protected Player m_player;
+
+    public static Action<EAIControlState> SwitchStateAction;
     
-	public AIControlState(EAIControlState stateType, Player player)
+	public AIControlState(Player player)
 	{
-		m_statetype = stateType;
 		m_player = player;
 	}
 
@@ -34,10 +36,18 @@ public abstract class AIControlState
 	{
         
 	}
+
+    public virtual void RegisterEvent()
+    {
+    }
+
+    public virtual void UnRegisterEvent()
+    {
+    }
     
 	public abstract void EnterState();
 
-	public abstract void UpdateState();
+	public abstract void UpdateState(GameBall target);
 
 	public virtual void PreExitState()
 	{

@@ -16,15 +16,15 @@ public class PlayerData
     public float m_moveSpeed;
     public Vector2 m_bornPosition;
 
-    private Vector2 m_firBallForceRange;
-    private float m_fireBallAngleRange;
-    private float m_playerMoveXRange;
-    private float m_playerForceY;
+    protected Vector2 m_firBallForceRange;
+    protected float m_fireBallAngleRange;
+    protected float m_playerMoveXRange;
+    protected float m_playerForceY;
 
     public PlayerData()
     {
         m_playerId = "Player";
-        m_playerName = "CocoPlay";
+        m_playerName = "Player";
         m_playerResPath = "Player";
         m_animControllerName = "Character";
 
