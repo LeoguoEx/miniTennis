@@ -9,6 +9,11 @@ public class Ground : MonoBehaviour
 	private GameObject m_leftPoint;
 	private GameObject m_rightPoint;
 	
+	public GroundData GroundData
+	{
+		get { return m_groundData; }
+	}
+	
 	void Start ()
 	{
 	}

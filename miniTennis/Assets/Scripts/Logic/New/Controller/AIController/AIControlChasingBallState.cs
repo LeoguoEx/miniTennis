@@ -19,7 +19,7 @@ public class AIControlChasingBallState : AIControlState
     public override void UpdateState(GameBall ball)
     {
         if(ball == null) { return;}
-        Vector3 position = ball.GetPosition();
+        Vector3 position = ball.GetBallInstance().transform.position;
 
         if (position.y < m_player.GetPlayerPosition().y)
         {

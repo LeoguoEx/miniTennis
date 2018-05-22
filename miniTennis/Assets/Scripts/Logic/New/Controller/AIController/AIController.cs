@@ -28,7 +28,7 @@ public class AIController : PlayerControllerBase
         m_target = ball;
     }
 
-    private void SwitchState(EAIControlState state)
+    public void SwitchState(EAIControlState state)
     {
         if (m_curState != null)
         {

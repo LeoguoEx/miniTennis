@@ -22,6 +22,9 @@ public class GameStateModuel : GameModuelBase
 		}
 		
 		SwitchState(EGameStateType.GameContestState);
+
+		GameEventModuel eveModuel = GameStart.GetInstance().EventModuel;
+		eveModuel.RegisterEventListener(GameEventID.SWITCH_GAME_STATE, SwitchState);
 	}
 
 	public void SwitchState(EGameStateType stateType)
@@ -46,5 +49,11 @@ public class GameStateModuel : GameModuelBase
 		{
 			m_curState.UpdateState();
 		}
+	}
+
+	private void SwitchState(GameEvent eve)
+	{
+		EGameStateType statetype = eve.GetParamByIndex<EGameStateType>(0);
+		SwitchState(statetype);
 	}
 }

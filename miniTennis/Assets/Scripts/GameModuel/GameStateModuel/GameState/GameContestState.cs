@@ -2,6 +2,43 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class GameContestData
+{
+	public int m_index;
+	public int m_heart;
+
+	private int m_maxHeart;
+	
+	public GameContestData()
+	{
+		m_index = 0;
+		m_heart = 3;
+
+		m_maxHeart = 5;
+	}
+
+	public void AddIndex()
+	{
+		m_index++;
+	}
+
+	public void AddHeart()
+	{
+		m_heart++;
+		m_heart = Mathf.Clamp(m_heart, 0, m_maxHeart);
+	}
+
+	public void ReduceHeart()
+	{
+		m_heart--;
+	}
+
+	public int GetHeart()
+	{
+		return m_heart;
+	}
+}
+
 public class GameContestState : GameStateBase
 {
 	private Player m_palyer;
@@ -12,6 +49,10 @@ public class GameContestState : GameStateBase
 	private Player m_ai;
 	private AIController m_aiController;
 
+	private GameContestData m_contestData;
+
+	private GameContestUI m_contestUI;
+
 	public GameContestState(EGameStateType stateType) : base(stateType)
 	{
 		
@@ -19,6 +60,8 @@ public class GameContestState : GameStateBase
 
 	public override void EnterState()
 	{
+		m_contestData = new GameContestData();
+		
 		GameObject ground = GameStart.GetInstance().ResModuel.LoadResources<GameObject>(EResourceType.Ground, "Ground");
 		ground = CommonFunc.Instantiate(ground);
 		m_ground = CommonFunc.AddSingleComponent<Ground>(ground);
@@ -35,6 +78,7 @@ public class GameContestState : GameStateBase
 		
 		BallData ballData = new BallData();
 		m_gameBall = new GameBall(ballData);
+		m_gameBall.SetOutofRangeAction(GameBallOutofRange);
         m_gameBall.SetPosition(groundData.GetFireBallPoint(ESeriveSide.Player));
 		
 		AIPlayerData aiData = new AIPlayerData();
@@ -45,6 +89,8 @@ public class GameContestState : GameStateBase
 		m_aiController = go.AddComponent<AIController>();
 	    m_aiController.SetGameBall(m_gameBall);
         m_aiController.InitController(m_ai);
+
+		m_contestUI = GameStart.GetInstance().UIModuel.LoadResUI<GameContestUI>("ContestPrefab");
 	}
 
 	public override void UpdateState()
@@ -78,19 +124,27 @@ public class GameContestState : GameStateBase
 			m_gameBall = null;
 		}
 
+		if (m_ai != null)
+		{
+			m_ai.Destroy();
+			m_ai = null;
+		}
+
 		if (m_aiController != null)
 		{
 			m_aiController.DestroyController();
 			m_aiController = null;
 		}
+		
+		GameStart.GetInstance().UIModuel.UnLoadResUI(m_contestUI.gameObject);
 	}
 	
-	private void HitBallDelegate(Vector2 direction, float force, int id)
+	private void HitBallDelegate(Player player, Vector2 direction, float force, int id)
 	{
 		if(m_gameBall == null){return;}
 
-	    bool checkIsHitArea = PlayerCollider.CheckInHitBallArea(m_gameBall.GetBallInstance().transform, m_palyer.Transform,
-	        m_palyer.PlayerData.m_radius, m_palyer.PlayerData.m_angle);
+	    bool checkIsHitArea = PlayerCollider.CheckInHitBallArea(m_gameBall.GetBallInstance().transform, player.Transform,
+		    player.PlayerData.m_radius, player.PlayerData.m_angle);
 	    if (checkIsHitArea)
 	    {
 	        if (m_gameBall != null)
@@ -100,6 +154,38 @@ public class GameContestState : GameStateBase
 
 	        GameEventModuel meoduel = GameStart.GetInstance().EventModuel;
 	        meoduel.SendEvent(GameEventID.PLAYER_HIT_BALL, true, 0f, id);
+		    
+		    CameraControl.GetInstance().Trigger();
+
+		    if (id == m_palyer.ID)
+		    {
+			    m_contestData.AddIndex();
+			    m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
+		    }
         }
+	}
+
+	private void GameBallOutofRange(GameBall ball)
+	{
+		Vector3 position = m_gameBall.GetPosition();
+		if (position.y > 0)
+		{
+			m_contestData.AddHeart();
+		}
+		else
+		{
+			m_contestData.ReduceHeart();
+		}
+
+		m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
+		m_gameBall.SetVelocity(Vector2.zero, 0f);
+		m_gameBall.SetPosition(m_ground.GroundData.GetFireBallPoint(ESeriveSide.Player));
+		m_aiController.SwitchState(EAIControlState.BackToBornPoint);
+		if (m_contestData.m_heart < 0)
+		{
+			m_palyer.SetIdle();
+			m_contestUI.GameEnd();
+			m_aiController.gameObject.SetActive(false);
+		}
 	}
 }

@@ -109,6 +109,25 @@ public class GameStart : MonoBehaviour
 
     #endregion
 
+    #region UI
+
+    private GameUIModuel m_uiModuel;
+
+    public GameUIModuel UIModuel
+    {
+        get
+        {
+            if (m_uiModuel == null)
+            {
+                m_uiModuel = gameObject.AddComponent<GameUIModuel>();
+            }
+
+            return m_uiModuel;
+        }
+    }
+
+    #endregion
+
     void Start()
     {
         m_instance = this;
@@ -120,6 +139,7 @@ public class GameStart : MonoBehaviour
         LogModuel.Init();
         EventModuel.Init();
         ResModuel.Init();
+        UIModuel.Init();
         StateModuel.Init();
     }
 }

@@ -12,13 +12,25 @@ public class AIPlayerData : PlayerData
         m_animControllerName = "Character";
 
         m_moveArea = new Rect(-4.57f, 8.15f, 4.64f, 4f);
-        m_radius = 3f;
-        m_angle = 120;
-        m_moveSpeed = 10f;
+        m_radius = 2f;
+        m_angle = 180;
+        m_moveSpeed = 8f;
         m_firBallForceRange = new Vector2(7f, 15f);
         m_bornPosition = new Vector2(0f, 7.8f);
         m_fireBallAngleRange = 60f;
         m_playerMoveXRange = 1.5f;
         m_playerForceY = 2;
+    }
+    
+    public override float GetFireBallForce(float y)
+    {
+        float value = Random.Range(m_firBallForceRange.x, m_firBallForceRange.y);
+        return value;
+    }
+
+    public override float GetFireBallAngle(float x)
+    {
+        float angle = Random.RandomRange(-m_fireBallAngleRange, m_fireBallAngleRange);
+        return angle;
     }
 }

@@ -18,7 +18,7 @@ public static class GameResFunc
                 case EResourceType.Role:
                     return string.Format("Entity/Prefab/{0}", name);
                 case EResourceType.UI:
-                    return name;
+                    return string.Format("UI/Prefab/{0}", name);
                 case EResourceType.BallMechine:
                     return string.Format("BallMechine/Prefab/{0}", name);
         }

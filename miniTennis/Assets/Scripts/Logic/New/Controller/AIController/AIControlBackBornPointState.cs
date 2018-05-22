@@ -12,7 +12,6 @@ public class AIControlBackBornPointState : AIControlState
 
     public override void EnterState()
     {
-
     }
 
     public override void RegisterEvent()
@@ -39,7 +38,6 @@ public class AIControlBackBornPointState : AIControlState
         m_player.MovePosition(curPosition);
 
         float distance = Vector2.Distance(m_player.GetPlayerPosition(), bornPosition);
-        Debug.LogError(distance);
         if (distance <= 0.7f && SwitchStateAction != null)
         {
             SwitchStateAction(EAIControlState.Idle);
@@ -48,7 +46,6 @@ public class AIControlBackBornPointState : AIControlState
 
     public override void ExitState()
     {
-
     }
 
     private void HandlePlayerHitBallEvent(GameEvent eve)

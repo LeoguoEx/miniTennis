@@ -7,7 +7,9 @@ public class GameBallInstance : MonoBehaviour
 {
 	private SpriteRenderer m_sprite;
 	private Rigidbody2D m_rigidBody;
-    private ParticleSystem m_particle;
+	private ParticleSystem m_quick;
+	private ParticleSystem m_mid;
+	private ParticleSystem m_low;
     private GameBallCollider m_ballCollider;
 
     private float m_force;
@@ -28,13 +30,26 @@ public class GameBallInstance : MonoBehaviour
 		    m_sprite = GetComponent<SpriteRenderer>();
 		}
 
-	    GameObject particle = CommonFunc.GetChild(gameObject, "Particle System");
+	    GameObject particle = CommonFunc.GetChild(gameObject, "Quick");
 	    if (particle != null)
 	    {
-	        m_particle = particle.GetComponent<ParticleSystem>();
-        }
-
-	    SetParticleActive(false);
+	        m_quick = particle.GetComponent<ParticleSystem>();
+		    m_quick.gameObject.SetActive(false);
+	    }
+		
+		particle = CommonFunc.GetChild(gameObject, "Mid");
+		if (particle != null)
+		{
+			m_mid = particle.GetComponent<ParticleSystem>();
+			m_mid.gameObject.SetActive(false);
+		}
+		
+		particle = CommonFunc.GetChild(gameObject, "Low");
+		if (particle != null)
+		{
+			m_low = particle.GetComponent<ParticleSystem>();
+			m_low.gameObject.SetActive(false);
+		}
 	}
 
 	void Update()
@@ -71,19 +86,37 @@ public class GameBallInstance : MonoBehaviour
 			m_rigidBody.velocity = Vector2.zero;
 		    m_rigidBody.velocity = dir * force;
 		}
+
+		if (m_quick != null && m_mid != null && m_low != null)
+		{
+			m_low.gameObject.SetActive((force < 10));
+			m_mid.gameObject.SetActive((force >= 10 && force < 13));
+			m_quick.gameObject.SetActive((force >= 13));
+		}
 	}
 
     public void SetPosition(Vector2 pos)
     {
         gameObject.transform.position = pos;
+	    SetParticleActive(false);
     }
 
     private void SetParticleActive(bool active)
     {
-        if (m_particle != null)
+        if (m_quick != null)
         {
-            m_particle.gameObject.SetActive(active);
+	        m_quick.gameObject.SetActive(active);
         }
+	    
+	    if (m_mid != null)
+	    {
+		    m_mid.gameObject.SetActive(active);
+	    }
+	    
+	    if (m_low != null)
+	    {
+		    m_low.gameObject.SetActive(active);
+	    }
     }
 
     private void CollisionEnter2D(Collision2D other)

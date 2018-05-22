@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void DHitBallDelegate(Vector2 direction, float force, int id);
+public delegate void DHitBallDelegate(Player player, Vector2 direction, float force, int id);
 
 public class Player
 {
@@ -12,7 +12,7 @@ public class Player
     private PlayerCollider m_collider;
     private PlayerData m_playerData;
 
-    private Vector2 m_playerMoveDirection;
+    private Vector2 m_playerMoveDirection = Vector2.down;
     private DHitBallDelegate m_hitBallCallBack;
 
     public PlayerData PlayerData { get { return m_playerData; } }
@@ -139,7 +139,7 @@ public class Player
         float force = m_playerData.GetFireBallForce(m_playerMoveDirection.y);
         if (m_hitBallCallBack != null)
         {
-            m_hitBallCallBack(direction, force, ID);
+            m_hitBallCallBack(this, direction, force, ID);
         }
     }
 }

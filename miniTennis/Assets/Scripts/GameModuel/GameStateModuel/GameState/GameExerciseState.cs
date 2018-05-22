@@ -83,10 +83,10 @@ public class GameExerciseState : GameStateBase
 		}
 	}
 
-	private void HitBallDelegate(Vector2 direction, float force, int id)
+	private void HitBallDelegate(Player player, Vector2 direction, float force, int id)
 	{
 		if(m_ballMechine == null){return;}
-        GameBall[] balls = m_ballMechine.GetInPlayerAreaBalls(m_palyer);
+        GameBall[] balls = m_ballMechine.GetInPlayerAreaBalls(player);
         if(balls == null || balls.Length == 0) { return; }
 	    for (int i = 0; i < balls.Length; i++)
 	    {

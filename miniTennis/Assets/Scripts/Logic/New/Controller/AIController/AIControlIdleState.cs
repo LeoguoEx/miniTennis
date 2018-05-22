@@ -11,7 +11,7 @@ public class AIControlIdleState : AIControlState
 
     public override void EnterState()
     {
-        m_player.EndMove();
+        m_player.SetIdle();
     }
 
     public override void UpdateState(GameBall ball)

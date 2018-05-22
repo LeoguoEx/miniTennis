@@ -7,6 +7,8 @@ public class PlayerCollider
     private Rect m_moveArea;        //角色移动范围
     private float m_areaRadius;     //角色击球扇形半径
     private float m_areaAngle;      //角色击球扇形角度
+
+    private BoxCollider2D m_boxCollider2D;
     
     public PlayerCollider(Rect area, float radius, float angle)
     {

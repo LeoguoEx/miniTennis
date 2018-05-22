@@ -12,7 +12,7 @@ public class AIControlHitState : AIControlState
     public override void EnterState()
     {
         m_player.EndMove();
-        SwitchStateAction(EAIControlState.BackToBornPoint);
+        CoroutineTool.GetInstance().StartGameCoroutine(WaitForHitAnimEnd());
     }
 
     public override void RegisterEvent()
@@ -27,10 +27,15 @@ public class AIControlHitState : AIControlState
 
     public override void UpdateState(GameBall ball)
     {
-
     }
 
     public override void ExitState()
     {
+    }
+
+    private IEnumerator WaitForHitAnimEnd()
+    {
+        yield return new WaitForSeconds(0.4f);
+        SwitchStateAction(EAIControlState.BackToBornPoint);
     }
 }
