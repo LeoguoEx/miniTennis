@@ -8,6 +8,9 @@ public class GameContestData
 	public int m_heart;
 
 	private int m_maxHeart;
+
+	public bool m_changeAudio;
+	private int m_recordCount;
 	
 	public GameContestData()
 	{
@@ -20,6 +23,11 @@ public class GameContestData
 	public void AddIndex()
 	{
 		m_index++;
+		m_recordCount++;
+		if (m_recordCount > 5)
+		{
+			m_changeAudio = true;
+		}
 	}
 
 	public void AddHeart()
@@ -31,6 +39,8 @@ public class GameContestData
 	public void ReduceHeart()
 	{
 		m_heart--;
+		m_recordCount = 0;
+		m_changeAudio = false;
 	}
 
 	public int GetHeart()
@@ -53,9 +63,20 @@ public class GameContestState : GameStateBase
 
 	private GameContestUI m_contestUI;
 
+	private List<string> m_audioNameList;
+	private int m_playerIndex;
+	private int m_aiIndex;
+
 	public GameContestState(EGameStateType stateType) : base(stateType)
 	{
-		
+		m_audioNameList = new List<string>
+		{
+			"01",
+			"02",
+			"03",
+			"04",
+			"05"
+		};
 	}
 
 	public override void EnterState()
@@ -91,6 +112,16 @@ public class GameContestState : GameStateBase
         m_aiController.InitController(m_ai);
 
 		m_contestUI = GameStart.GetInstance().UIModuel.LoadResUI<GameContestUI>("ContestPrefab");
+		CoroutineTool.GetInstance().StartCoroutine(SetUI());
+		
+		GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
+		audioModuel.PlayBgAudio("BGM_001");
+	}
+
+	private IEnumerator SetUI()
+	{
+		yield return new WaitForEndOfFrame();
+		m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
 	}
 
 	public override void UpdateState()
@@ -157,12 +188,29 @@ public class GameContestState : GameStateBase
 		    
 		    CameraControl.GetInstance().Trigger();
 
+		    GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
 		    if (id == m_palyer.ID)
 		    {
 			    m_contestData.AddIndex();
+			    
 			    m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
+			    if (m_contestData != null && m_contestData.m_changeAudio)
+			    {
+				    audioModuel.PlayBgAudio("BGM_002");
+			    }
+
+			    m_playerIndex++;
+			    m_playerIndex = Mathf.Clamp(m_playerIndex, 0, m_audioNameList.Count - 1);
+			    audioModuel.PlayAudio(m_audioNameList[m_playerIndex]);
 		    }
-        }
+		    else
+		    {
+			    m_aiIndex++;
+			    m_aiIndex = Mathf.Clamp(m_aiIndex, 0, m_audioNameList.Count - 1);
+			    audioModuel.PlayAudio(m_audioNameList[m_aiIndex]);
+		    }
+
+	    }
 	}
 
 	private void GameBallOutofRange(GameBall ball)
@@ -171,14 +219,22 @@ public class GameContestState : GameStateBase
 		if (position.y > 0)
 		{
 			m_contestData.AddHeart();
+			m_aiIndex = 0;
 		}
 		else
 		{
 			m_contestData.ReduceHeart();
+			m_playerIndex = 0;
+		}
+
+		if (m_contestData != null && !m_contestData.m_changeAudio)
+		{
+			GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
+			audioModuel.PlayBgAudio("BGM_001");
 		}
 
 		m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
-		m_gameBall.SetVelocity(Vector2.zero, 0f);
+		m_gameBall.ResetVelocity();
 		m_gameBall.SetPosition(m_ground.GroundData.GetFireBallPoint(ESeriveSide.Player));
 		m_aiController.SwitchState(EAIControlState.BackToBornPoint);
 		if (m_contestData.m_heart < 0)

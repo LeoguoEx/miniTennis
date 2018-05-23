@@ -21,6 +21,8 @@ public static class GameResFunc
                     return string.Format("UI/Prefab/{0}", name);
                 case EResourceType.BallMechine:
                     return string.Format("BallMechine/Prefab/{0}", name);
+                case EResourceType.Audio:
+                    return string.Format("Audio/{0}", name);
         }
         return name;
     }

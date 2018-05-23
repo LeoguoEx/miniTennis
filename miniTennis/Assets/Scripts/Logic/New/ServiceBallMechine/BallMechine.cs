@@ -105,7 +105,7 @@ public class BallMechine
     private void HandleBallOutOfRangeAction(GameBall ball)
     {
         if(ball == null){return;}
-        ball.SetVelocity(Vector2.zero, 0f);
+        ball.ResetVelocity();
         ball.SetActive(false);
         m_ballList.Remove(ball);
         m_cacheBallList.Add(ball);

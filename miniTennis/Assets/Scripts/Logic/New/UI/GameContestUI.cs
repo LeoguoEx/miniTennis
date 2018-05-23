@@ -83,6 +83,6 @@ public class GameContestUI : GameUIBase
 	private void SwitchState()
 	{
 		GameEventModuel eveModuel = GameStart.GetInstance().EventModuel;
-		eveModuel.SendEvent(GameEventID.SWITCH_GAME_STATE, true, 0f, EGameStateType.GameExerciseState);
+		eveModuel.SendEvent(GameEventID.SWITCH_GAME_STATE, true, 0f, EGameStateType.GameContestState);
 	}
 }

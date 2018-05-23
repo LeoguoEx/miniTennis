@@ -1069,9 +1069,9 @@ public class FingerGestures : MonoBehaviour
 
     /*
 iPhone3        320x480  163 ppi
-iPhone4        640×960  326 ppi 
-iPhone4S       640×960  326 ppi 
-iPhone5        640×1136 326 ppi 
+iPhone4        640ï¿½960  326 ppi 
+iPhone4S       640ï¿½960  326 ppi 
+iPhone5        640ï¿½1136 326 ppi 
 iPhone5S       640x1136 326 ppi
 iPad          1024x768  132 ppi
 iPad2         1024x768  132 ppi
@@ -1105,9 +1105,9 @@ iPad mini2    2048x1536 326 ppi
 
 #if UNITY_IPHONE
                 // try to detect some devices that aren't supported by Unity (yet)
-                if( iPhone.generation == iPhoneGeneration.Unknown ||
-                    iPhone.generation == iPhoneGeneration.iPadUnknown ||
-                    iPhone.generation == iPhoneGeneration.iPhoneUnknown )
+                if( UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.Unknown ||
+                    UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadUnknown ||
+                    UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPhoneUnknown )
                 {
                     // ipad mini 2 ?
                     if( Screen.width == 2048 && Screen.height == 1536 && screenDPI == 260 )

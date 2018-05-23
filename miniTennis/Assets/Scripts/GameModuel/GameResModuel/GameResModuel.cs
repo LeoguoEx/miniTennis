@@ -12,6 +12,7 @@ public enum EResourceType
 	Effect = 5,
 	Ground = 6,
     BallMechine = 7,
+	Audio = 8,
 }
 
 public delegate void DLoadResourcesCompete(UnityEngine.Object res);

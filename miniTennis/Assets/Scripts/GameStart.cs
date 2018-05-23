@@ -128,6 +128,25 @@ public class GameStart : MonoBehaviour
 
     #endregion
 
+    #region Audio
+
+    private GameAudioModuel m_audioModuel;
+
+    public GameAudioModuel AudioModuel
+    {
+        get
+        {
+            if (m_audioModuel == null)
+            {
+                m_audioModuel = gameObject.AddComponent<GameAudioModuel>();
+            }
+
+            return m_audioModuel;
+        }
+    }
+
+    #endregion
+
     void Start()
     {
         m_instance = this;
@@ -139,6 +158,7 @@ public class GameStart : MonoBehaviour
         LogModuel.Init();
         EventModuel.Init();
         ResModuel.Init();
+        AudioModuel.Init();
         UIModuel.Init();
         StateModuel.Init();
     }

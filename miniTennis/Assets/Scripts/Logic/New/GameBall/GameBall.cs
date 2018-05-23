@@ -54,6 +54,14 @@ public class GameBall
         }
     }
 
+    public void ResetVelocity()
+    {
+        if (m_ballInstance != null)
+        {
+            m_ballInstance.FresetVelocity();
+        }
+    }
+
     public GameObject GetBallInstance()
     {
         if (m_ballInstance != null)
