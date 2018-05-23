@@ -36,9 +36,9 @@ public class GameStartUI : GameUIBase
         
         yield return new WaitForSeconds(1.08f);
 
-        LTDescr descr = LeanTween.size(m_button.gameObject.GetComponent<RectTransform>(), new Vector2(99f, 99f), 0.5f);
-        descr = descr.setFrom(new Vector3(90f, 90f));
-        descr = descr.setLoopPingPong();
-        descr.setRepeat(1000);
+//        LTDescr descr = LeanTween.size(m_button.gameObject.GetComponent<RectTransform>(), new Vector2(99f, 99f), 0.5f);
+//        descr = descr.setFrom(new Vector3(90f, 90f));
+//        descr = descr.setLoopPingPong();
+//        descr.setRepeat(1000);
     }
 }
