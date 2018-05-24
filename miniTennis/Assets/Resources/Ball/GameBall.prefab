@@ -71,6 +71,7 @@ GameObject:
   - component: {fileID: 4403174478778608}
   - component: {fileID: 61991800689870596}
   - component: {fileID: 50923272238991890}
+  - component: {fileID: 95376791332213724}
   m_Layer: 8
   m_Name: GameBall
   m_TagString: Untagged
@@ -115,7 +116,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1489185462168032}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.91, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4675505844474144}
@@ -209,6 +210,23 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.52, y: 0.52}
   m_EdgeRadius: 0
+--- !u!95 &95376791332213724
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1489185462168032}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 44cf905a08aea4a848d2408688a81936, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!198 &198323054866888130
 ParticleSystem:
   m_ObjectHideFlags: 1

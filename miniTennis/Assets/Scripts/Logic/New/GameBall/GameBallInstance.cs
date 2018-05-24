@@ -18,6 +18,8 @@ public class GameBallInstance : MonoBehaviour
 	private Rect m_getBallRect;
 	private ContactPoint2D m_collision;
 
+	private Animator m_animator;
+
 	public Action BallOutofRangeAction = null;
 	
 	void Start ()
@@ -25,6 +27,7 @@ public class GameBallInstance : MonoBehaviour
 	    m_rigidBody = GetComponent<Rigidbody2D>();
 	    m_ballCollider = gameObject.AddComponent<GameBallCollider>();
 	    m_ballCollider.m_colliderAction = CollisionEnter2D;
+		m_animator = gameObject.GetComponent<Animator>();
 
         GameObject ball = CommonFunc.GetChild(gameObject, "Ball");
 		if (ball != null)
@@ -85,18 +88,30 @@ public class GameBallInstance : MonoBehaviour
 
 		if (m_rigidBody != null)
 		{
+			float angle = Vector2.Angle(transform.up, dir);
+			transform.Rotate(Vector3.forward, angle);
+			transform.localScale = new Vector3(0.6f, 1f, 1f);
+			
 			m_rigidBody.velocity = Vector2.zero;
+			m_rigidBody.velocity = dir * force;
 		}
 
-		StartCoroutine(DelaySetVelocity(dir, force));
+		if (m_quick != null && m_mid != null && m_low != null)
+		{
+			m_low.gameObject.SetActive((force < 10));
+			m_mid.gameObject.SetActive((force >= 10 && force < 13));
+			m_quick.gameObject.SetActive((force >= 13));
+		}
+
+		m_preDir = dir;
 	}
 
 	public void FresetVelocity()
 	{
 		if (m_rigidBody != null)
 		{
+			gameObject.transform.localScale = Vector3.one;
 			m_rigidBody.velocity = Vector2.zero;
-			transform.localScale = Vector3.one;
 			transform.rotation = Quaternion.identity;
 		}
 	}
@@ -104,7 +119,6 @@ public class GameBallInstance : MonoBehaviour
     public void SetPosition(Vector2 pos)
     {
         gameObject.transform.position = pos;
-	    gameObject.transform.localScale = Vector3.one;
 	    SetParticleActive(false);
     }
 
@@ -137,39 +151,23 @@ public class GameBallInstance : MonoBehaviour
 
 	private IEnumerator Bounce()
 	{
-		yield return new WaitForSeconds(0.07f);
+		m_animator.Play("Empty");
+		m_animator.Play("Bounce");
+		
+		yield return new WaitForSeconds(0.04f);
 		ContactPoint2D contactPoint = m_collision;
 		Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
 		newDir.z = 0f;
-		Quaternion rotation = Quaternion.FromToRotation(m_dir, newDir);
-		transform.rotation = rotation;
+		
+		float angle = Vector2.Angle(transform.up, newDir);
+		transform.Rotate(Vector3.forward, angle);
 		if (m_rigidBody != null)
 		{
 			m_rigidBody.velocity = newDir.normalized * m_force;
 		}
 		m_dir = newDir;
-	}
-
-	private IEnumerator DelaySetVelocity(Vector2 dir, float force)
-	{
-		yield return new WaitForSeconds(0.07f);
 		
-		gameObject.transform.localScale= new Vector3(0.65f, gameObject.transform.localScale.y, 1f);
-
-		if (m_rigidBody != null)
-		{
-			transform.rotation = Quaternion.FromToRotation(m_preDir, dir);
-			m_rigidBody.velocity = Vector2.zero;
-			m_rigidBody.velocity = dir * force;
-		}
-
-		if (m_quick != null && m_mid != null && m_low != null)
-		{
-			m_low.gameObject.SetActive((force < 10));
-			m_mid.gameObject.SetActive((force >= 10 && force < 13));
-			m_quick.gameObject.SetActive((force >= 13));
-		}
-
-		m_preDir = dir;
+		yield return new WaitForSeconds(0.4f);
+		transform.localScale = new Vector3(0.6f, 1f, 1f);
 	}
 }
