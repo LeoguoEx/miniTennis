@@ -21,6 +21,9 @@ public class GameBallInstance : MonoBehaviour
 	private Animator m_animator;
 
 	public Action BallOutofRangeAction = null;
+
+    private float m_rotationSpeed;
+    private float m_aTanTarget;
 	
 	void Start ()
 	{
@@ -88,11 +91,11 @@ public class GameBallInstance : MonoBehaviour
 
 		if (m_rigidBody != null)
 		{
-			float angle = Vector2.Angle(transform.up, dir);
-			transform.Rotate(Vector3.forward, angle);
-			transform.localScale = new Vector3(0.6f, 1f, 1f);
-			
-			m_rigidBody.velocity = Vector2.zero;
+            transform.localScale = new Vector3(0.6f, 1f, 1f);
+            
+            RotateToDirAngle(dir);
+
+            m_rigidBody.velocity = Vector2.zero;
 			m_rigidBody.velocity = dir * force;
 		}
 
@@ -102,8 +105,6 @@ public class GameBallInstance : MonoBehaviour
 			m_mid.gameObject.SetActive((force >= 10 && force < 13));
 			m_quick.gameObject.SetActive((force >= 13));
 		}
-
-		m_preDir = dir;
 	}
 
 	public void FresetVelocity()
@@ -158,10 +159,9 @@ public class GameBallInstance : MonoBehaviour
 		ContactPoint2D contactPoint = m_collision;
 		Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
 		newDir.z = 0f;
-		
-		float angle = Vector2.Angle(transform.up, newDir);
-		transform.Rotate(Vector3.forward, angle);
-		if (m_rigidBody != null)
+        
+	    RotateToDirAngle(newDir);
+        if (m_rigidBody != null)
 		{
 			m_rigidBody.velocity = newDir.normalized * m_force;
 		}
@@ -170,4 +170,15 @@ public class GameBallInstance : MonoBehaviour
 		yield return new WaitForSeconds(0.4f);
 		transform.localScale = new Vector3(0.6f, 1f, 1f);
 	}
+
+    private void RotateToDirAngle(Vector3 dir)
+    {
+        float angle = Vector3.Angle(Vector3.up, dir.normalized);
+        Vector3 newVector = Vector3.Cross(Vector3.up, dir.normalized);
+        if (newVector.z < 0)
+        {
+            angle = -angle;
+        }
+        transform.rotation = Quaternion.Euler(new Vector3(0f, 0f , angle));
+    }
 }
