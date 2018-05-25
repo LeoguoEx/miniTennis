@@ -55,6 +55,7 @@ public class GameContestState : GameStateBase
 	private PlayerController m_playerController;
 	private GameBall m_gameBall;
 	private Ground m_ground;
+	private GameEffect m_effect;
 
 	private Player m_ai;
 	private AIController m_aiController;
@@ -66,7 +67,8 @@ public class GameContestState : GameStateBase
 	private List<string> m_audioNameList;
 	private int m_playerIndex;
 	private int m_aiIndex;
-
+	private ESide m_side;
+	
 	public GameContestState(EGameStateType stateType) : base(stateType)
 	{
 		m_audioNameList = new List<string>
@@ -81,6 +83,10 @@ public class GameContestState : GameStateBase
 
 	public override void EnterState()
 	{
+		GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
+		eventModuel.RegisterEventListener(GameEventID.TRIGGER_GAME_EVENT, OnTriggerEffectStart);
+		eventModuel.RegisterEventListener(GameEventID.END_GAME_EVENT, OnTriggerEffectEnd);
+		
 		m_contestData = new GameContestData();
 		
 		GameObject ground = GameStart.GetInstance().ResModuel.LoadResources<GameObject>(EResourceType.Ground, "Ground");
@@ -100,7 +106,7 @@ public class GameContestState : GameStateBase
 		BallData ballData = new BallData();
 		m_gameBall = new GameBall(ballData);
 		m_gameBall.SetOutofRangeAction(GameBallOutofRange);
-        m_gameBall.SetPosition(groundData.GetFireBallPoint(ESeriveSide.Player));
+        m_gameBall.SetPosition(groundData.GetFireBallPoint(ESide.Player));
 		
 		AIPlayerData aiData = new AIPlayerData();
 		m_ai = new Player(2, aiData);
@@ -110,6 +116,8 @@ public class GameContestState : GameStateBase
 		m_aiController = go.AddComponent<AIController>();
 	    m_aiController.SetGameBall(m_gameBall);
         m_aiController.InitController(m_ai);
+		
+		m_effect = new GameEffect();
 
 		m_contestUI = GameStart.GetInstance().UIModuel.LoadResUI<GameContestUI>("ContestPrefab");
 		CoroutineTool.GetInstance().StartCoroutine(SetUI());
@@ -126,11 +134,23 @@ public class GameContestState : GameStateBase
 
 	public override void UpdateState()
 	{
-		
+		if (m_effect != null)
+		{
+			m_effect.Update();
+		}
+
+		if (m_gameBall != null)
+		{
+			m_gameBall.Update();
+		}
 	}
 
 	public override void ExitState()
 	{
+		GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
+		eventModuel.UnRegisterEventListener(GameEventID.TRIGGER_GAME_EVENT, OnTriggerEffectStart);
+		eventModuel.UnRegisterEventListener(GameEventID.END_GAME_EVENT, OnTriggerEffectEnd);
+		
 		if (m_ground != null)
 		{
 			GameObject.Destroy(m_ground.gameObject);
@@ -166,6 +186,11 @@ public class GameContestState : GameStateBase
 			m_aiController.DestroyController();
 			m_aiController = null;
 		}
+
+		if (m_effect != null)
+		{
+			m_effect.Destory();
+		}
 		
 		GameStart.GetInstance().UIModuel.UnLoadResUI(m_contestUI.gameObject);
 	}
@@ -175,22 +200,18 @@ public class GameContestState : GameStateBase
 		if(m_gameBall == null){return;}
 
 	    bool checkIsHitArea = PlayerCollider.CheckInHitBallArea(m_gameBall.GetBallInstance().transform, player.Transform,
-		    player.PlayerData.m_radius, player.PlayerData.m_angle);
+		    player.PlayerData.m_radius, player.PlayerData.m_angle, player.BoxCollider);
 	    if (checkIsHitArea)
 	    {
-	        if (m_gameBall != null)
-	        {
-	            m_gameBall.SetVelocity(direction, force);
-	        }
-
-	        GameEventModuel meoduel = GameStart.GetInstance().EventModuel;
-	        meoduel.SendEvent(GameEventID.PLAYER_HIT_BALL, true, 0f, id);
-		    
 		    CameraControl.GetInstance().Trigger();
 
 		    GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
 		    if (id == m_palyer.ID)
 		    {
+			    GameEventModuel meoduel = GameStart.GetInstance().EventModuel;
+			    meoduel.SendEvent(GameEventID.PLAYER_HIT_BALL, true, 0f);
+			    
+			    m_side = ESide.Player;
 			    m_contestData.AddIndex();
 			    
 			    m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
@@ -205,11 +226,18 @@ public class GameContestState : GameStateBase
 		    }
 		    else
 		    {
+			    m_side = ESide.AI;
 			    m_aiIndex++;
 			    m_aiIndex = Mathf.Clamp(m_aiIndex, 0, m_audioNameList.Count - 1);
 			    audioModuel.PlayAudio(m_audioNameList[m_aiIndex]);
 		    }
 
+		    if (m_gameBall != null)
+		    {
+			    ESide side = (id == m_palyer.ID) ? ESide.Player : ESide.AI;
+			    m_gameBall.SetVelocity(direction, force, side);
+			    m_gameBall.ChangeEffectDir(side);
+		    }
 	    }
 	}
 
@@ -235,7 +263,7 @@ public class GameContestState : GameStateBase
 
 		m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
 		m_gameBall.ResetVelocity();
-		m_gameBall.SetPosition(m_ground.GroundData.GetFireBallPoint(ESeriveSide.Player));
+		m_gameBall.SetPosition(m_ground.GroundData.GetFireBallPoint(ESide.Player));
 		m_aiController.SwitchState(EAIControlState.BackToBornPoint);
 		if (m_contestData.m_heart < 0)
 		{
@@ -243,5 +271,57 @@ public class GameContestState : GameStateBase
 			m_contestUI.GameEnd();
 			m_aiController.gameObject.SetActive(false);
 		}
+	}
+	
+	
+	private void OnTriggerEffectStart(GameEvent eve)
+	{
+		EEffectType[] types = CreateRandomEffectType();
+		int random = Random.Range(0, types.Length);
+		if (types.Length > 0)
+		{
+			EEffectType type = types[random];
+			//TODO:触发执行对应的事件
+
+			//type = EEffectType.BananaBall;
+
+			EffectBase effect = m_effect.GetEffectData<EffectBase>(type);
+			if (effect != null)
+			{
+				m_ground.ExcuteEffect(effect, m_side);
+				m_gameBall.ExcuteEffect(effect, m_side);
+			}
+		}
+	}
+
+	private void OnTriggerEffectEnd(GameEvent eve)
+	{
+		if (m_effect != null)
+		{
+			m_effect.SetEffectEnd();
+		}
+	}
+
+	private EEffectType[] CreateRandomEffectType()
+	{
+		int count = (int)EEffectType.MaxType;
+		if (m_effect.PreEffectType != EEffectType.MaxType)
+		{
+			count--;
+		}
+
+		EEffectType[] types = new EEffectType[count];
+		int index = 0;
+		for (EEffectType i = 0; i < EEffectType.MaxType; i++)
+		{
+			if (m_effect.PreEffectType == i)
+			{
+				continue;
+			}
+
+			types[index] = i;
+		}
+
+		return types;
 	}
 }

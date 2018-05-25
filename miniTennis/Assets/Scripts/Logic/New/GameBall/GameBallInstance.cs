@@ -24,6 +24,11 @@ public class GameBallInstance : MonoBehaviour
 
     private float m_rotationSpeed;
     private float m_aTanTarget;
+	private Vector3 m_newDir;
+
+	private bool m_makeItOffset;
+	private Vector2 m_offsetDir;
+	private bool m_needOffset;
 	
 	void Start ()
 	{
@@ -66,6 +71,15 @@ public class GameBallInstance : MonoBehaviour
 		{
 			BallOutofRangeAction();
 		}
+
+		if (m_rigidBody.velocity != Vector2.zero && m_needOffset)
+		{
+			Vector2 dir = m_rigidBody.velocity.normalized;
+			m_rigidBody.velocity = Vector2.zero;
+			dir = (m_offsetDir + dir);
+			m_rigidBody.velocity =  dir* m_force;
+			RotateToDirAngle(dir);
+		}
 	}
 
 	public void SetBallRect(Rect rect)
@@ -88,6 +102,9 @@ public class GameBallInstance : MonoBehaviour
 	{
 	    m_force = force;
 	    m_dir = dir;
+		
+		m_animator.Play("Empty");
+		m_animator.Play("Bounce");
 
 		if (m_rigidBody != null)
 		{
@@ -105,6 +122,12 @@ public class GameBallInstance : MonoBehaviour
 			m_mid.gameObject.SetActive((force >= 10 && force < 13));
 			m_quick.gameObject.SetActive((force >= 13));
 		}
+	}
+
+	public void SetOffsetDir(Vector2 dir, bool needOffset)
+	{
+		m_offsetDir = dir;
+		m_needOffset = needOffset;
 	}
 
 	public void FresetVelocity()
@@ -144,28 +167,33 @@ public class GameBallInstance : MonoBehaviour
     private void CollisionEnter2D(Collision2D other)
     {
         if(other == null) { return; }
-
 	    m_rigidBody.velocity = Vector3.zero;
 	    m_collision = other.contacts[0];
+	    
+	    ContactPoint2D contactPoint = m_collision;
+	    Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
+	    newDir.z = 0f;
+	    m_newDir = newDir;
+	    
+	    m_animator.Play("Empty");
+	    m_animator.Play("Bounce");
+	    
+	    m_rigidBody.velocity =Vector2.zero;
+	    
 	    StartCoroutine(Bounce());
     }
 
 	private IEnumerator Bounce()
 	{
-		m_animator.Play("Empty");
-		m_animator.Play("Bounce");
-		
 		yield return new WaitForSeconds(0.04f);
-		ContactPoint2D contactPoint = m_collision;
-		Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
-		newDir.z = 0f;
         
-	    RotateToDirAngle(newDir);
+		m_offsetDir = new Vector2(-m_offsetDir.x, 0f);
+	    RotateToDirAngle(m_newDir);
         if (m_rigidBody != null)
 		{
-			m_rigidBody.velocity = newDir.normalized * m_force;
+			m_rigidBody.velocity = m_newDir.normalized * m_force;
 		}
-		m_dir = newDir;
+		m_dir = m_newDir;
 		
 		yield return new WaitForSeconds(0.4f);
 		transform.localScale = new Vector3(0.6f, 1f, 1f);

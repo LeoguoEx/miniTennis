@@ -65,7 +65,7 @@ public class BallMechine
         ball.SetOutofRangeAction(HandleBallOutOfRangeAction);
         ball.SetActive(true);
         ball.SetPosition(m_instance.GetFireBallWorldPoint());
-        ball.SetVelocity(dir, force);
+        ball.SetVelocity(dir, force, ESide.None);
     }
 
     private GameBall CreateGameBall()
@@ -93,7 +93,7 @@ public class BallMechine
         {
             GameBall ball = m_ballList[i];
             bool inarea = PlayerCollider.CheckInHitBallArea(ball.GetBallInstance().transform, player.Transform,
-                player.PlayerData.m_radius, player.PlayerData.m_angle);
+                player.PlayerData.m_radius, player.PlayerData.m_angle, player.BoxCollider);
             if (inarea)
             {
                 m_checkBalls.Add(ball);

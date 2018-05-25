@@ -19,6 +19,19 @@ public class Player
     public Transform Transform { get { return m_avatar.transform; } }
     public int ID { get { return m_id; } }
     
+    public BoxCollider2D BoxCollider
+    {
+        get
+        {
+            if (m_collider != null)
+            {
+                return m_collider.BoxCollider2D;
+            }
+
+            return null;
+        }
+    }
+    
     public Player(int id, PlayerData playerData)
     {
         if(playerData == null){return;}
@@ -35,8 +48,9 @@ public class Player
             
             m_anim = new PlayerAnim(player);
             m_anim.InitAnimator(playerData.m_animControllerName);
-            
-            m_collider = new PlayerCollider(playerData.m_moveArea, playerData.m_radius, playerData.m_angle);
+
+            GameObject collider = CommonFunc.GetChild(player, "Collider");
+            m_collider = new PlayerCollider(playerData.m_moveArea, playerData.m_radius, playerData.m_angle, collider.GetComponent<BoxCollider2D>());
 
             MovePosition(m_playerData.m_bornPosition);
         }

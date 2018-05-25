@@ -33,6 +33,7 @@ public class AIIdleState : AIStateBase
 
 	private void HandleBallHitEvent(GameEvent eve)
 	{
+		Debug.LogError("HandleBallHitEvent");
 		GameEventModuel eventModuel = GameStart.GetInstance().EventModuel;
 		eventModuel.SendEvent(GameEventID.AI_SWITCH_STATE, true, 0f, EAIStateType.GotoHitTarget);
 	}

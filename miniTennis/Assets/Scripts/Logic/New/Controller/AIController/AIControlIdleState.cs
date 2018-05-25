@@ -43,10 +43,7 @@ public class AIControlIdleState : AIControlState
     private void HandlePlayerHitBallEvent(GameEvent eve)
     {
         if(eve == null) { return; }
-        int playerId = eve.GetParamByIndex<int>(0);
-        if (playerId != m_player.ID && SwitchStateAction != null)
-        {
-            SwitchStateAction(EAIControlState.ChasingBall);
-        }
+        
+        SwitchStateAction(EAIControlState.ChasingBall);
     }
 }

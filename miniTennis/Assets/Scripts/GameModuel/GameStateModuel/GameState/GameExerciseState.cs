@@ -90,7 +90,7 @@ public class GameExerciseState : GameStateBase
         if(balls == null || balls.Length == 0) { return; }
 	    for (int i = 0; i < balls.Length; i++)
 	    {
-	        balls[i].SetVelocity(direction, force);
+	        balls[i].SetVelocity(direction, force, ESide.None);
 
         }
 	}

@@ -31,7 +31,7 @@ public class AIControlChasingBallState : AIControlState
             m_player.MovePosition(position);
 
             bool checkInArea = PlayerCollider.CheckInHitBallArea(ball.GetBallInstance().transform, m_player.Transform,
-                m_player.PlayerData.m_radius, m_player.PlayerData.m_angle);
+                m_player.PlayerData.m_radius, m_player.PlayerData.m_angle, m_player.BoxCollider);
             if (checkInArea && SwitchStateAction != null)
             {
                 SwitchStateAction(EAIControlState.Hit);

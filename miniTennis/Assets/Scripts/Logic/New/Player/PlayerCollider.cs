@@ -9,15 +9,21 @@ public class PlayerCollider
     private float m_areaAngle;      //角色击球扇形角度
 
     private BoxCollider2D m_boxCollider2D;
+
+    public BoxCollider2D BoxCollider2D
+    {
+        get { return m_boxCollider2D; }
+    }
     
-    public PlayerCollider(Rect area, float radius, float angle)
+    public PlayerCollider(Rect area, float radius, float angle, BoxCollider2D collider)
     {
         m_moveArea = area;
         m_areaRadius = radius;
         m_areaAngle = angle;
+        m_boxCollider2D = collider;
     }
 
-    public static bool CheckInHitBallArea(Transform target, Transform player, float radius, float angle)
+    public static bool CheckInHitBallArea(Transform target, Transform player, float radius, float angle, BoxCollider2D collider)
     {
         //与敌人的距离
         float distance = Vector3.Distance(player.position, target.position);
@@ -35,6 +41,18 @@ public class PlayerCollider
                 return true;
             }
         }
+
+        if (collider != null)
+        {
+            Rect rect = new Rect(player.position.x - collider.size.x * 0.5f, player.position.x + collider.size.x * 0.5f,
+                player.position.y - collider.size.y * 0.5f, player.position.y + collider.size.y * 0.5f);
+            if (rect.x < target.position.x && target.position.x < rect.y && rect.width < target.position.y &&
+                target.position.y < rect.height)
+            {
+                return true;
+            }
+        }
+        
         return false;
     }
 
