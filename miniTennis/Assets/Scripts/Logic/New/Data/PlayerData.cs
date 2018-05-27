@@ -29,9 +29,9 @@ public class PlayerData
         m_animControllerName = "Character";
 
         m_moveArea = new Rect(-4.57f, -1.5f, 4.64f, -9.52f);
-        m_radius = 2f;
+        m_radius = 2.5f;
         m_angle = 180;
-        m_moveSpeed = 0.04f;
+        m_moveSpeed = 0.03f;
         m_firBallForceRange = new Vector2(7f, 13f);
         m_bornPosition = new Vector2(0f, -5.76f);
         m_fireBallAngleRange = 60f;

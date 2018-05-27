@@ -18,6 +18,8 @@ public class Player
     public PlayerData PlayerData { get { return m_playerData; } }
     public Transform Transform { get { return m_avatar.transform; } }
     public int ID { get { return m_id; } }
+
+    public Transform Target { get; set; }
     
     public BoxCollider2D BoxCollider
     {
@@ -119,7 +121,9 @@ public class Player
     {
         if (m_anim != null)
         {
-            m_anim.PlayAnim(EEntityState.Hit);
+            bool left = CheckTargetIsLeft();
+            EEntityState state = left ? EEntityState.HitFan : EEntityState.Hit;
+            m_anim.PlayAnim(state);
         }
         
         //动画事件触发
@@ -155,5 +159,14 @@ public class Player
         {
             m_hitBallCallBack(this, direction, force, ID);
         }
+    }
+
+    private bool CheckTargetIsLeft()
+    {
+        if (Target != null)
+        {
+            return Target.position.x < GetPlayerPosition().x;
+        }
+        return false;
     }
 }

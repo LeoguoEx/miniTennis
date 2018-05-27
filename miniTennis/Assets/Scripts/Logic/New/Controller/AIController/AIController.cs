@@ -7,7 +7,7 @@ public class AIController : PlayerControllerBase
     private Dictionary<int, AIControlState> m_stateDic;
     private AIControlState m_curState;
 
-    private GameBall m_target;
+    private Transform m_target;
 
 	public override void InitController(Player player)
 	{
@@ -25,7 +25,12 @@ public class AIController : PlayerControllerBase
 
     public void SetGameBall(GameBall ball)
     {
-        m_target = ball;
+        m_target = ball.GetBallInstance().transform;
+    }
+
+    public void SetBomBall(BombBall ball)
+    {
+        m_target = ball.GetBallInstance().transform;
     }
 
     public void SwitchState(EAIControlState state)

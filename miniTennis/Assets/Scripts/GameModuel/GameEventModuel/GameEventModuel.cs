@@ -74,6 +74,7 @@ public class GameEventModuel : GameModuelBase
         for (int i = m_events.Count - 1; i >= 0; i--)
         {
             GameEvent gameEvent = m_events[i];
+            m_events.Remove(gameEvent);
             if (gameEvent.NeedSendEvent())
             {
                 GameEventListener listener = GetGameEventListenerByEventID(gameEvent.EventID);
@@ -81,7 +82,6 @@ public class GameEventModuel : GameModuelBase
                 {
                     listener.DispatchGameEvent(gameEvent);
                 }
-                m_events.Remove(gameEvent);
             }
         }
     }

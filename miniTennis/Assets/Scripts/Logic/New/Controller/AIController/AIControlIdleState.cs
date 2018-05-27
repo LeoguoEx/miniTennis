@@ -14,7 +14,7 @@ public class AIControlIdleState : AIControlState
         m_player.SetIdle();
     }
 
-    public override void UpdateState(GameBall ball)
+    public override void UpdateState(Transform ball)
     {
 
     }

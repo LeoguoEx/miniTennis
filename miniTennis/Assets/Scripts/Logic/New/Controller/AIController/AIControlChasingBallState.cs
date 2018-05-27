@@ -16,10 +16,10 @@ public class AIControlChasingBallState : AIControlState
         m_player.StartMove();
     }
 
-    public override void UpdateState(GameBall ball)
+    public override void UpdateState(Transform ball)
     {
         if(ball == null) { return;}
-        Vector3 position = ball.GetBallInstance().transform.position;
+        Vector3 position = ball.position;
 
         if (position.y < m_player.GetPlayerPosition().y)
         {
@@ -30,7 +30,7 @@ public class AIControlChasingBallState : AIControlState
             position += Time.deltaTime * moveDir * m_player.PlayerData.m_moveSpeed;
             m_player.MovePosition(position);
 
-            bool checkInArea = PlayerCollider.CheckInHitBallArea(ball.GetBallInstance().transform, m_player.Transform,
+            bool checkInArea = PlayerCollider.CheckInHitBallArea(ball, m_player.Transform,
                 m_player.PlayerData.m_radius, m_player.PlayerData.m_angle, m_player.BoxCollider);
             if (checkInArea && SwitchStateAction != null)
             {

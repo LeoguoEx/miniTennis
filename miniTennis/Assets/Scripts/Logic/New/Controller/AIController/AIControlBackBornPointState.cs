@@ -28,7 +28,7 @@ public class AIControlBackBornPointState : AIControlState
         eveModuel.UnRegisterEventListener(GameEventID.PLAYER_HIT_BALL, HandlePlayerHitBallEvent);
     }
 
-    public override void UpdateState(GameBall ball)
+    public override void UpdateState(Transform ball)
     {
         Vector2 bornPosition = m_player.PlayerData.m_bornPosition;
         Vector2 curPosition = m_player.GetPlayerPosition();

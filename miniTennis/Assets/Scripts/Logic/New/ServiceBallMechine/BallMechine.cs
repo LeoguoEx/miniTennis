@@ -78,7 +78,7 @@ public class BallMechine
         }
         else
         {
-            ball = new GameBall(m_ballData);
+            ball = new GameBall(m_ballData, null);
         }
         m_ballList.Add(ball);
         return ball;

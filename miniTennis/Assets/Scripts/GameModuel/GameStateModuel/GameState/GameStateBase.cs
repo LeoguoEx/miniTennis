@@ -9,6 +9,7 @@ public enum EGameStateType
     GameExerciseState = 1,
     GameContestState = 2,
     GameTestState = 3,
+    BombState = 4,
 }
 
 public abstract class GameStateBase 

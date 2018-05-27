@@ -51,7 +51,7 @@ public class GameContestData
 
 public class GameContestState : GameStateBase
 {
-	private Player m_palyer;
+	private Player m_player;
 	private PlayerController m_playerController;
 	private GameBall m_gameBall;
 	private Ground m_ground;
@@ -68,6 +68,8 @@ public class GameContestState : GameStateBase
 	private int m_playerIndex;
 	private int m_aiIndex;
 	private ESide m_side;
+
+    private bool m_change;
 	
 	public GameContestState(EGameStateType stateType) : base(stateType)
 	{
@@ -96,15 +98,15 @@ public class GameContestState : GameStateBase
 		m_ground.InitGround(groundData);
 		
 		PlayerData playerData = new PlayerData();
-		m_palyer = new Player(1, playerData);
-		m_palyer.InitPlayerAction(HitBallDelegate);
+		m_player = new Player(1, playerData);
+		m_player.InitPlayerAction(HitBallDelegate);
 		
 		GameObject go = new GameObject("Controller");
 		m_playerController = go.AddComponent<PlayerController>();
-		m_playerController.InitController(m_palyer);
+		m_playerController.InitController(m_player);
 		
 		BallData ballData = new BallData();
-		m_gameBall = new GameBall(ballData);
+		m_gameBall = new GameBall(ballData, m_ground.BounceLine);
 		m_gameBall.SetOutofRangeAction(GameBallOutofRange);
         m_gameBall.SetPosition(groundData.GetFireBallPoint(ESide.Player));
 		
@@ -123,7 +125,17 @@ public class GameContestState : GameStateBase
 		CoroutineTool.GetInstance().StartCoroutine(SetUI());
 		
 		GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
-		audioModuel.PlayBgAudio("BGM_001");
+        List<string> list = new List<string>
+        {
+            "BGM_001",
+            "BGM_002",
+            "lerp",
+        };
+	    audioModuel.PreLoadAudio(list);
+        audioModuel.StopAudio();
+
+	    m_player.Target = m_gameBall.GetBallInstance().transform;
+	    m_ai.Target = m_gameBall.GetBallInstance().transform;
 	}
 
 	private IEnumerator SetUI()
@@ -157,10 +169,10 @@ public class GameContestState : GameStateBase
 			m_ground = null;
 		}
 
-		if (m_palyer != null)
+		if (m_player != null)
 		{
-			m_palyer.Destroy();
-			m_palyer = null;
+			m_player.Destroy();
+			m_player = null;
 		}
 
 		if (m_playerController != null)
@@ -206,7 +218,7 @@ public class GameContestState : GameStateBase
 		    CameraControl.GetInstance().Trigger();
 
 		    GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
-		    if (id == m_palyer.ID)
+		    if (id == m_player.ID)
 		    {
 			    GameEventModuel meoduel = GameStart.GetInstance().EventModuel;
 			    meoduel.SendEvent(GameEventID.PLAYER_HIT_BALL, true, 0f);
@@ -215,9 +227,16 @@ public class GameContestState : GameStateBase
 			    m_contestData.AddIndex();
 			    
 			    m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
-			    if (m_contestData != null && m_contestData.m_changeAudio)
+			    if (m_contestData != null && m_contestData.m_changeAudio && !m_change)
 			    {
-				    audioModuel.PlayBgAudio("BGM_002");
+                    List<string> list = new List<string>
+                    {
+                        "lerp",
+                        "BGM_002",
+                    };
+				    audioModuel.PlayBgAudio(list);
+			        m_change = true;
+
 			    }
 
 			    m_playerIndex++;
@@ -234,7 +253,7 @@ public class GameContestState : GameStateBase
 
 		    if (m_gameBall != null)
 		    {
-			    ESide side = (id == m_palyer.ID) ? ESide.Player : ESide.AI;
+			    ESide side = (id == m_player.ID) ? ESide.Player : ESide.AI;
 			    m_gameBall.SetVelocity(direction, force, side);
 			    m_gameBall.ChangeEffectDir(side);
 		    }
@@ -255,10 +274,10 @@ public class GameContestState : GameStateBase
 			m_playerIndex = 0;
 		}
 
-		if (m_contestData != null && !m_contestData.m_changeAudio)
+		if (m_contestData != null && !m_contestData.m_changeAudio && m_change)
 		{
 			GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
-			audioModuel.PlayBgAudio("BGM_001");
+			audioModuel.StopAudio();
 		}
 
 		m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
@@ -267,7 +286,7 @@ public class GameContestState : GameStateBase
 		m_aiController.SwitchState(EAIControlState.BackToBornPoint);
 		if (m_contestData.m_heart < 0)
 		{
-			m_palyer.SetIdle();
+			m_player.SetIdle();
 			m_contestUI.GameEnd();
 			m_aiController.gameObject.SetActive(false);
 		}

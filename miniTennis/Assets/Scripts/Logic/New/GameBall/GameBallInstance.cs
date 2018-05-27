@@ -10,6 +10,7 @@ public class GameBallInstance : MonoBehaviour
 	private ParticleSystem m_quick;
 	private ParticleSystem m_mid;
 	private ParticleSystem m_low;
+    private GameObject m_trail;
     private GameBallCollider m_ballCollider;
 
     private float m_force;
@@ -29,6 +30,19 @@ public class GameBallInstance : MonoBehaviour
 	private bool m_makeItOffset;
 	private Vector2 m_offsetDir;
 	private bool m_needOffset;
+
+    private Action<string> m_bounceAction;
+    private string m_colliderName;
+
+    public Vector2 GetDir()
+    {
+        return m_dir;
+    }
+
+    public void SetBounceAction(Action<string> action)
+    {
+        m_bounceAction = action;
+    }
 	
 	void Start ()
 	{
@@ -63,6 +77,9 @@ public class GameBallInstance : MonoBehaviour
 			m_low = particle.GetComponent<ParticleSystem>();
 			m_low.gameObject.SetActive(false);
 		}
+
+	    m_trail = CommonFunc.GetChild(gameObject, "Trail");
+
 	}
 
 	void Update()
@@ -116,19 +133,25 @@ public class GameBallInstance : MonoBehaviour
 			m_rigidBody.velocity = dir * force;
 		}
 
-		if (m_quick != null && m_mid != null && m_low != null)
-		{
-			m_low.gameObject.SetActive((force < 10));
-			m_mid.gameObject.SetActive((force >= 10 && force < 13));
-			m_quick.gameObject.SetActive((force >= 13));
-		}
+//		if (m_quick != null && m_mid != null && m_low != null)
+//		{
+//			m_low.gameObject.SetActive((force < 10));
+//			m_mid.gameObject.SetActive((force >= 10 && force < 13));
+//			m_quick.gameObject.SetActive((force >= 13));
+//		}
+	    SetParticleActive(true);
+
 	}
 
-	public void SetOffsetDir(Vector2 dir, bool needOffset)
+	public void SetOffsetDir(Vector2 dir)
 	{
 		m_offsetDir = dir;
-		m_needOffset = needOffset;
 	}
+
+    public void SetNeedOffset(bool needOffset)
+    {
+        m_needOffset = needOffset;
+    }
 
 	public void FresetVelocity()
 	{
@@ -146,22 +169,41 @@ public class GameBallInstance : MonoBehaviour
 	    SetParticleActive(false);
     }
 
+    public void PlayBounceUpAndDown()
+    {
+        if (m_animator != null)
+        {
+            m_animator.Play("BounceUpDown");
+        }
+    }
+
     private void SetParticleActive(bool active)
     {
         if (m_quick != null)
         {
-	        m_quick.gameObject.SetActive(active);
+	        m_quick.gameObject.SetActive(false);
         }
 	    
 	    if (m_mid != null)
 	    {
-		    m_mid.gameObject.SetActive(active);
+		    m_mid.gameObject.SetActive(false);
 	    }
 	    
 	    if (m_low != null)
 	    {
-		    m_low.gameObject.SetActive(active);
-	    }
+		    m_low.gameObject.SetActive(false);
+        }
+
+        if (m_trail != null)
+        {
+            m_trail.gameObject.SetActive(active);
+
+            TrailRenderer render = m_trail.GetComponent<TrailRenderer>();
+            if (render != null)
+            {
+                render.Clear();
+            }
+        }
     }
 
     private void CollisionEnter2D(Collision2D other)
@@ -179,16 +221,23 @@ public class GameBallInstance : MonoBehaviour
 	    m_animator.Play("Bounce");
 	    
 	    m_rigidBody.velocity =Vector2.zero;
-	    
-	    StartCoroutine(Bounce());
+
+        m_colliderName = other.gameObject.name;
+
+        StartCoroutine(Bounce());
     }
 
 	private IEnumerator Bounce()
 	{
 		yield return new WaitForSeconds(0.04f);
-        
+
+	    if (m_bounceAction != null)
+	    {
+	        m_bounceAction(m_colliderName);
+	    }
+
 		m_offsetDir = new Vector2(-m_offsetDir.x, 0f);
-	    RotateToDirAngle(m_newDir);
+        RotateToDirAngle(m_newDir);
         if (m_rigidBody != null)
 		{
 			m_rigidBody.velocity = m_newDir.normalized * m_force;

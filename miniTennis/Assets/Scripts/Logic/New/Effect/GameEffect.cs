@@ -19,6 +19,7 @@ public class GameEffect
 
     private bool m_effecting;
     private float m_createNextTime;
+    private float m_value;
 
     private EEffectType m_preEffectType;
 
@@ -75,6 +76,7 @@ public class GameEffect
             m_effectInstance.gameObject.SetActive(true);
             m_effectInstance.transform.position = new Vector3(x, y, 0f);
             m_effectInstance.PlayTweenScale();
+            m_value = Random.Range(0, 1) > 0.5f ? 1 : -1;
         }
     }
 
@@ -83,6 +85,21 @@ public class GameEffect
         if (!m_effecting && Time.time > m_createNextTime)
         {
             CreateEffect();
+        }
+
+        if (m_effectInstance != null && m_effectInstance.gameObject.activeSelf)
+        {
+            Vector3 position = m_effectInstance.gameObject.transform.position;
+            position += new Vector3(Time.deltaTime * m_effectData.m_moveSpeed * m_value, 0f);
+            if (position.x > m_effectData.m_createEffectRect.y)
+            {
+                m_value = -1;
+            }
+            else if (position.x < m_effectData.m_createEffectRect.x)
+            {
+                m_value = 1;
+            }
+            m_effectInstance.transform.position = position;
         }
     }
 

@@ -25,7 +25,7 @@ public class AIControlHitState : AIControlState
         base.UnRegisterEvent();
     }
 
-    public override void UpdateState(GameBall ball)
+    public override void UpdateState(Transform ball)
     {
     }
 

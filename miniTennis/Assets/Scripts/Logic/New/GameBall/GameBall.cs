@@ -16,7 +16,7 @@ public class GameBall
     private bool m_needOffset;
     private Vector2 m_offsetDir;
     
-    public GameBall(BallData data)
+    public GameBall(BallData data, Action<string> action = null)
     {
         GameResModuel resModuel = GameStart.GetInstance().ResModuel;
         GameObject ball = resModuel.LoadResources<GameObject>(EResourceType.Ball, "GameBall");
@@ -26,6 +26,7 @@ public class GameBall
             m_ballAnim = new GameBallAnim();
             m_ballInstance = ball.AddComponent<GameBallInstance>();
             m_ballInstance.SetBallRect(data.m_ballBoundArea);
+            m_ballInstance.SetBounceAction(action);
         }
     }
 
@@ -94,6 +95,7 @@ public class GameBall
         if (m_ballInstance != null)
         {
             m_ballInstance.SetPosition(pos);
+            m_ballInstance.PlayBounceUpAndDown();
         }
     }
 
@@ -115,7 +117,8 @@ public class GameBall
 
                 if (m_ballInstance != null)
                 {
-                    m_ballInstance.SetOffsetDir(Vector2.zero, false);
+                    m_ballInstance.SetOffsetDir(Vector2.zero);
+                    m_ballInstance.SetNeedOffset(false);
                 }
                 
                 GameEventModuel eveModuel = GameStart.GetInstance().EventModuel;
@@ -123,7 +126,7 @@ public class GameBall
             }
             else
             {
-                m_ballInstance.SetOffsetDir(m_offsetDir, m_needOffset);
+                m_ballInstance.SetNeedOffset(m_needOffset);
             }
         }
     }
@@ -146,6 +149,7 @@ public class GameBall
         {
             float value = UnityEngine.Random.Range(0f, 1f);
             m_offsetDir = (value >= 0.5f) ? new Vector2(0.02f, 0f) : new Vector2(-0.02f, 0f);
+            m_ballInstance.SetOffsetDir(m_offsetDir);
         }
     }
 }

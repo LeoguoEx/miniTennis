@@ -11,6 +11,9 @@ public class Ground : MonoBehaviour
 
 	private GameObject m_effectAI;
 	private GameObject m_effectPlayer;
+
+    private Animator m_leftLine;
+    private Animator m_rightLine;
 	
 	private bool m_start;
 	private float m_endTime;
@@ -31,8 +34,16 @@ public class Ground : MonoBehaviour
 		m_rightPoint = CommonFunc.GetChild(gameObject, "RightPoint");
 		m_effectAI = CommonFunc.GetChild(gameObject, "AIEffect");
 		m_effectPlayer = CommonFunc.GetChild(gameObject, "PlayerEffect");
+	    GameObject leftLine = CommonFunc.GetChild(gameObject, "LLine");
+	    m_leftLine = leftLine.GetComponent<Animator>();
+	    GameObject rightLine = CommonFunc.GetChild(gameObject, "RLine");
+	    m_rightLine = rightLine.GetComponent<Animator>();
 
-		int count = m_effectPlayer.transform.childCount;
+	    m_leftLine.enabled = false;
+	    m_rightLine.enabled = false;
+
+
+        int count = m_effectPlayer.transform.childCount;
 		for (int i = 0; i < count; i++)
 		{
 			Transform trans = m_effectPlayer.transform.GetChild(i);
@@ -107,4 +118,30 @@ public class Ground : MonoBehaviour
 			m_effectPlayer.gameObject.SetActive(false);
 		}
 	}
+
+    public void BounceLine(string name)
+    {
+        Animator animator = null;
+        if (name == m_leftLine.name)
+        {
+            animator = m_leftLine;
+        }
+        else if(name == m_rightLine.name)
+        {
+            animator = m_rightLine;
+        }
+        GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
+        if (animator != null)
+        {
+            animator.enabled = true;
+            animator.Play("LineAnim");
+
+            audioModuel.PlayAudio("hit_002");
+        }
+        else
+        {
+            audioModuel.PlayAudio("hit_001");
+        }
+        
+    }
 }

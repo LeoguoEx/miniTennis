@@ -14,7 +14,7 @@ public class AIControlFireBallState : AIControlState
         
     }
 
-    public override void UpdateState(GameBall ball)
+    public override void UpdateState(Transform ball)
     {
     }
 

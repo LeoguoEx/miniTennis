@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using CocoPlay;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,9 +16,10 @@ public class GameContestUI : GameUIBase
 	public override void OnInit()
 	{
 		m_heartParent = CommonFunc.GetChild(gameObject, "Heart");
-		m_num = CommonFunc.GetChild(gameObject, "Num").GetComponent<Text>();
+	    GameObject num = CommonFunc.GetChild(gameObject, "Num");
+        m_num = num.GetComponent<Text>();
 
-		if (m_heartParent != null)
+        if (m_heartParent != null)
 		{
 			int childCount = m_heartParent.transform.childCount;
 			m_hearts = new GameObject[childCount];
@@ -72,6 +74,12 @@ public class GameContestUI : GameUIBase
 		{
 			m_num.gameObject.SetActive(true);
 			m_num.text = num.ToString();
+
+		    if (num != 0)
+		    {
+		        CocoTweenScale scale = m_num.GetComponent<CocoTweenScale>();
+		        scale.TweenOnce(false, true);
+            }
 		}
 	}
 

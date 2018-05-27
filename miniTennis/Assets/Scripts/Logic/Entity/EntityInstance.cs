@@ -5,6 +5,9 @@ public enum EEntityState
     Idle = 1,
     Prepare = 2,
     Hit = 3,
+    HitFan = 4,
+    Switch = 5,
+    SwitchBack = 6,
 }
 
 public class EntityInstance : MonoBehaviour

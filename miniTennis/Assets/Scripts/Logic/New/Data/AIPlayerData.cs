@@ -12,7 +12,7 @@ public class AIPlayerData : PlayerData
         m_animControllerName = "Character";
 
         m_moveArea = new Rect(-4.57f, 8.15f, 4.64f, 4f);
-        m_radius = 2f;
+        m_radius = 2.5f;
         m_angle = 180;
         m_moveSpeed = 8f;
         m_firBallForceRange = new Vector2(7f, 15f);

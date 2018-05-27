@@ -47,7 +47,7 @@ public abstract class AIControlState
     
 	public abstract void EnterState();
 
-	public abstract void UpdateState(GameBall target);
+	public abstract void UpdateState(Transform target);
 
 	public virtual void PreExitState()
 	{
