@@ -22,7 +22,7 @@ public class GameStateModuel : GameModuelBase
 			m_stateDic[id].SwitchStateAction = SwitchState;
 		}
 		
-		SwitchState(EGameStateType.BombState);
+		SwitchState(EGameStateType.GameContestState);
 
 		GameEventModuel eveModuel = GameStart.GetInstance().EventModuel;
 		eveModuel.RegisterEventListener(GameEventID.SWITCH_GAME_STATE, SwitchState);
