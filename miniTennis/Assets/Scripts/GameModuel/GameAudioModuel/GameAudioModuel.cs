@@ -73,6 +73,19 @@ public class GameAudioModuel : GameModuelBase
 	    m_souceList.Add(source);
 	}
 
+	public void playAudio(AudioClip clip)
+	{
+		AudioSource source = GetAudioSource();
+		source.clip = clip;
+		source.Play();
+		m_souceList.Add(source);
+	}
+
+	public void PlayAudio(List<string> names)
+	{
+		StartCoroutine(PlayAudioSync(names));
+	}
+
     private AudioSource GetAudioSource()
     {
         AudioSource souce = null;
@@ -121,10 +134,10 @@ public class GameAudioModuel : GameModuelBase
 
     public void PlayBgAudio(List<string> name)
     {
-        StartCoroutine(PlayAudio(name));
+        StartCoroutine(PlayBgAudioSync(name));
     }
 
-    private IEnumerator PlayAudio(List<string> list)
+    private IEnumerator PlayBgAudioSync(List<string> list)
     {
         for (int i = 0; i < list.Count; i++)
         {
@@ -141,4 +154,17 @@ public class GameAudioModuel : GameModuelBase
             yield return new WaitForSeconds(clip.length);
         }
     }
+	
+	private IEnumerator PlayAudioSync(List<string> list)
+	{
+		for (int i = 0; i < list.Count; i++)
+		{
+			GameResModuel resModuel = GameStart.GetInstance().ResModuel;
+			AudioClip clip = resModuel.LoadResources<AudioClip>(EResourceType.Audio, list[i]);
+
+			playAudio(clip);
+
+			yield return new WaitForSeconds(clip.length);
+		}
+	}
 }

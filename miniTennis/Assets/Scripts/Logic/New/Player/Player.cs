@@ -124,9 +124,17 @@ public class Player
             bool left = CheckTargetIsLeft();
             EEntityState state = left ? EEntityState.HitFan : EEntityState.Hit;
             m_anim.PlayAnim(state);
+            
         }
-        
-        //动画事件触发
+
+        CoroutineTool.GetInstance().StartCoroutine(StartHitBall());
+//        //动画事件触发
+//        HitBall();
+    }
+
+    private IEnumerator StartHitBall()
+    {
+        yield return new WaitForSeconds(0.04f);
         HitBall();
     }
 

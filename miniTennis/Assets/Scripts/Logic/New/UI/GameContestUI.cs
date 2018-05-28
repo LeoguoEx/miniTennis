@@ -90,7 +90,9 @@ public class GameContestUI : GameUIBase
 
 	private void SwitchState()
 	{
+		GameAudioModuel moduel = GameStart.GetInstance().AudioModuel;
+		moduel.PlayAudio("click_01");
 		GameEventModuel eveModuel = GameStart.GetInstance().EventModuel;
-		eveModuel.SendEvent(GameEventID.SWITCH_GAME_STATE, true, 0f, EGameStateType.GameContestState);
+		eveModuel.SendEvent(GameEventID.SWITCH_GAME_STATE, true, 0f, EGameStateType.GameMenuState);
 	}
 }

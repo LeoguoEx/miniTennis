@@ -24,10 +24,8 @@ public class GameContestData
 	{
 		m_index++;
 		m_recordCount++;
-		if (m_recordCount > 5)
-		{
-			m_changeAudio = true;
-		}
+		
+		m_changeAudio = true;
 	}
 
 	public void AddHeart()
@@ -40,7 +38,6 @@ public class GameContestData
 	{
 		m_heart--;
 		m_recordCount = 0;
-		m_changeAudio = false;
 	}
 
 	public int GetHeart()
@@ -276,8 +273,8 @@ public class GameContestState : GameStateBase
 
 		if (m_contestData != null && !m_contestData.m_changeAudio && m_change)
 		{
-			GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
-			audioModuel.StopAudio();
+//			GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
+//			audioModuel.StopAudio();
 		}
 
 		m_contestUI.FreshUI(m_contestData.m_heart, m_contestData.m_index);
@@ -289,6 +286,9 @@ public class GameContestState : GameStateBase
 			m_player.SetIdle();
 			m_contestUI.GameEnd();
 			m_aiController.gameObject.SetActive(false);
+			
+			GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
+			audioModuel.PlayAudio("lose");
 		}
 	}
 	

@@ -13,6 +13,8 @@ public class BombInstance : MonoBehaviour
     private ParticleSystem m_low;
     private GameObject m_trail;
     private GameBallCollider m_ballCollider;
+    private GameObject m_boom;
+    private GameObject m_ball;
 
     private float m_force;
     private Vector3 m_dir;
@@ -48,11 +50,14 @@ public class BombInstance : MonoBehaviour
         m_ballCollider.m_colliderAction = CollisionEnter2D;
         m_animator = gameObject.GetComponent<Animator>();
 
-        GameObject ball = CommonFunc.GetChild(gameObject, "Ball");
-        if (ball != null)
+        m_ball = CommonFunc.GetChild(gameObject, "Ball");
+        if (m_ball != null)
         {
             m_sprite = GetComponent<SpriteRenderer>();
         }
+
+        m_boom = CommonFunc.GetChild(gameObject, "Boom");
+        m_boom.SetActive(false);
 
         GameObject particle = CommonFunc.GetChild(gameObject, "Quick");
         if (particle != null)
@@ -238,8 +243,21 @@ public class BombInstance : MonoBehaviour
 
     public void SetScale(float value)
     {
-        Vector2 scale = Vector2.Lerp(Vector2.one, new Vector2(1.5f, 1.5f), value);
-        Debug.LogError(scale);
+        Vector2 scale = Vector2.Lerp(Vector2.one, new Vector2(2.5f, 2.5f), value);
         transform.localScale = scale;
+    }
+
+    public void SetBoom()
+    {
+        m_rigidBody.velocity = Vector2.zero;
+        if (m_ball != null)
+        {
+            m_ball.SetActive(false);
+        }
+
+        if (m_boom != null)
+        {
+            m_boom.SetActive(true);
+        }
     }
 }

@@ -116,6 +116,7 @@ public class BombBall
 
     public void PlayBomb()
     {
+        m_ballInstance.SetBoom();
     }
 
     public void SetBombScale(float value)

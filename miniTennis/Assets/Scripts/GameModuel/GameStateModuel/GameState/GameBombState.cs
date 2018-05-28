@@ -30,6 +30,7 @@ public class GameBombState : GameStateBase
     private float m_aiTotalBombTime;
 
     private bool m_start;
+    private bool m_end;
 
     public GameBombState(EGameStateType stateType)
         : base(stateType)
@@ -87,8 +88,7 @@ public class GameBombState : GameStateBase
         GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
         List<string> list = new List<string>
         {
-            "BGM_001",
-            "BGM_002",
+            "BGM_tense",
             "lerp",
         };
         audioModuel.PreLoadAudio(list);
@@ -101,6 +101,8 @@ public class GameBombState : GameStateBase
         m_aiBombTime = 0f;
         m_playerTotalBombTime = 20f;
         m_aiTotalBombTime = 20f;
+        m_start = false;
+        m_end = false;
     }
 
     public override void UpdateState()
@@ -129,23 +131,43 @@ public class GameBombState : GameStateBase
         if (m_bombBall != null && m_start)
         {
             Vector3 position = m_bombBall.GetPosition();
-            if (position.y > 0)
+            if (position.y > 1.5f)
             {
                 m_aiBombTime += Time.deltaTime;
                 if (m_aiBombTime > m_aiTotalBombTime)
                 {
+                    GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
                     m_bombBall.PlayBomb();
+                    m_bombUI.ShowEnd(true);
+
+                    if (m_playerController.gameObject.activeSelf)
+                    {
+                        audioModuel.PlayAudio(new List<string>{"explode_03", "win"});
+                    }
+                    m_playerController.gameObject.SetActive(false);
                 }
+                m_end = true;
                 float value = m_aiBombTime / m_aiTotalBombTime;
                 m_bombBall.SetBombScale(value);
             }
-            else
+            else if(position.y < -1.5f)
             {
                 m_playerBombTime += Time.deltaTime;
                 if (m_playerBombTime > m_playerTotalBombTime)
                 {
+                    GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
                     m_bombBall.PlayBomb();
+                    //audioModuel.PlayAudio("explode_03");
+                    m_bombUI.ShowEnd(false);
+                    
+                    if (m_playerController.gameObject.activeSelf)
+                    {
+                        audioModuel.PlayAudio(new List<string>{"explode_03", "lose"});
+                    }
+                    
+                    m_playerController.gameObject.SetActive(false);
                 }
+                m_end = true;
                 float value = m_playerBombTime / m_playerTotalBombTime;
                 m_bombBall.SetBombScale(value);
             }
@@ -227,7 +249,7 @@ public class GameBombState : GameStateBase
                     List<string> list = new List<string>
                     {
                         "lerp",
-                        "BGM_002",
+                        "BGM_tense",
                     };
                     audioModuel.PlayBgAudio(list);
                     m_change = true;
@@ -261,13 +283,13 @@ public class GameBombState : GameStateBase
         Vector3 position = m_bombBall.GetPosition();
         if (position.y > 0)
         {
-            m_contestData.AddHeart();
+            //m_contestData.AddHeart();
             m_aiIndex = 0;
             m_aiBombTime += 2f;
         }
         else
         {
-            m_contestData.ReduceHeart();
+            //m_contestData.ReduceHeart();
             m_playerIndex = 0;
             m_playerBombTime += 2f;
         }
@@ -281,11 +303,11 @@ public class GameBombState : GameStateBase
         m_bombBall.ResetVelocity();
         m_bombBall.SetPosition(m_ground.GroundData.GetFireBallPoint(ESide.Player));
         m_aiController.SwitchState(EAIControlState.BackToBornPoint);
-        if (m_contestData.m_heart < 0)
-        {
-            m_player.SetIdle();
-            m_aiController.gameObject.SetActive(false);
-        }
+//        if (m_contestData.m_heart < 0)
+//        {
+//            m_player.SetIdle();
+//            m_aiController.gameObject.SetActive(false);
+//        }
     }
 
 
