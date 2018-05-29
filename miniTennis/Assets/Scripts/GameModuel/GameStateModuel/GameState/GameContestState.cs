@@ -133,6 +133,7 @@ public class GameContestState : GameStateBase
 
 	    m_player.Target = m_gameBall.GetBallInstance().transform;
 	    m_ai.Target = m_gameBall.GetBallInstance().transform;
+	    m_change = false;
 	}
 
 	private IEnumerator SetUI()

@@ -10,15 +10,11 @@ public class GameAudioModuel : GameModuelBase
 	private string m_bgName;
 
     private GameObject m_go;
-    private List<AudioSource> m_souceList;
-    private List<AudioSource> m_cacheSourceList;
 
     private Dictionary<string, AudioClip> m_audioClipDic;
 	
 	public override void Init()
 	{
-	    m_souceList = new List<AudioSource>();
-        m_cacheSourceList = new List<AudioSource>();
         m_audioClipDic = new Dictionary<string, AudioClip>();
 	    m_go = new GameObject("AudioListener");
 		m_audioListener = m_go.AddComponent<AudioListener>();
@@ -44,41 +40,11 @@ public class GameAudioModuel : GameModuelBase
         }
     }
 
-    void Update()
-    {
-        if (m_souceList.Count > 0)
-        {
-            for (int i = m_souceList.Count; i < m_souceList.Count; i--)
-            {
-                if (!m_souceList[i].isPlaying)
-                {
-                    m_cacheSourceList.Add(m_souceList[i]);
-                    m_souceList.RemoveAt(i);
-                }
-            }
-        }
-    }
-
 	public void PlayAudio(string name)
 	{
-	    AudioClip clip = null;
-	    if (!m_audioClipDic.TryGetValue(name, out clip))
-	    {
-	        GameResModuel resModuel = GameStart.GetInstance().ResModuel;
-	        clip = resModuel.LoadResources<AudioClip>(EResourceType.Audio, name);
-        }
-	    AudioSource source = GetAudioSource();
-	    source.clip = clip;
-	    source.Play();
-	    m_souceList.Add(source);
-	}
-
-	public void playAudio(AudioClip clip)
-	{
-		AudioSource source = GetAudioSource();
-		source.clip = clip;
-		source.Play();
-		m_souceList.Add(source);
+	    GameObject go = new GameObject();
+	    GameAudioItem item = go.AddComponent<GameAudioItem>();
+	    item.PlayAudio(name);
 	}
 
 	public void PlayAudio(List<string> names)
@@ -86,26 +52,10 @@ public class GameAudioModuel : GameModuelBase
 		StartCoroutine(PlayAudioSync(names));
 	}
 
-    private AudioSource GetAudioSource()
-    {
-        AudioSource souce = null;
-        if (m_cacheSourceList.Count > 0)
-        {
-            souce = m_cacheSourceList[0];
-            m_cacheSourceList.RemoveAt(0);
-        }
-        else
-        {
-            souce = m_go.AddComponent<AudioSource>();
-        }
-        return souce;
-    }
-
 	public void PlayBgAudio(string name)
 	{
         StopAllCoroutines();
-
-		if(name == m_bgName){return;}
+        
 		m_bgName = name;
 	    AudioClip clip = null;
 	    if (!m_audioClipDic.TryGetValue(name, out clip))
@@ -128,6 +78,8 @@ public class GameAudioModuel : GameModuelBase
     private void PlayBgAudio(AudioClip clip)
     {
 	    m_bgSource.clip = clip;
+        m_bgSource.enabled = false;
+        m_bgSource.enabled = true;
         m_bgSource.Play();
     }
 
@@ -158,12 +110,11 @@ public class GameAudioModuel : GameModuelBase
 	{
 		for (int i = 0; i < list.Count; i++)
 		{
-			GameResModuel resModuel = GameStart.GetInstance().ResModuel;
-			AudioClip clip = resModuel.LoadResources<AudioClip>(EResourceType.Audio, list[i]);
+		    GameObject go = new GameObject();
+		    GameAudioItem item = go.AddComponent<GameAudioItem>();
+		    float length = item.PlayAudio(list[i]);
 
-			playAudio(clip);
-
-			yield return new WaitForSeconds(clip.length);
+            yield return new WaitForSeconds(length);
 		}
 	}
 }

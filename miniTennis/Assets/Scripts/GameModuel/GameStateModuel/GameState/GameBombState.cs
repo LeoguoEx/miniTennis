@@ -103,6 +103,7 @@ public class GameBombState : GameStateBase
         m_aiTotalBombTime = 20f;
         m_start = false;
         m_end = false;
+        m_change = false;
     }
 
     public override void UpdateState()
