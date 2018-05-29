@@ -38,6 +38,13 @@ public class EffectBananaBall : EffectBase
     }
 }
 
+public class EffectInk : EffectBase
+{
+    public EffectInk(float time) : base(EEffectType.InkEffect, time)
+    {
+    }
+}
+
 //public class EffectDisappearAndApear : EffectBase
 //{
 //    public EffectDisappearAndApear(float duringtTime) 

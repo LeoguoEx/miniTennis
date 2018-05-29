@@ -18,7 +18,13 @@ public class CameraControl : MonoBehaviour
 	private float currentTime = 0.0f;  
 	private float totalTime = 0.0f;
 
+	public float showMaskTime = 0.01f;
+	public float maskCurrentTime = 0.0f;
+	public float maskTotalTime = 0.0f;
+
 	private Vector3 m_recordPosition;
+
+	private GameObject m_mask;
 
 	private static CameraControl m_instance;
 
@@ -37,19 +43,52 @@ public class CameraControl : MonoBehaviour
 	{
 		m_camera = gameObject.GetComponent<Camera>();
 		m_recordPosition = gameObject.transform.position;
+
+		m_mask = CommonFunc.GetChild(gameObject, "Mask");
+		m_mask.SetActive(false);
 	}
   
 	public void Trigger()  
 	{  
 		totalTime = shakeTime;  
 		currentTime = shakeTime;
-	}  
+	}
+
+	public void TriggerMask()
+	{
+		maskTotalTime = showMaskTime;
+		maskCurrentTime = showMaskTime;
+	}
   
 	public void Stop()  
 	{  
 		currentTime = 0.0f;  
 		totalTime = 0.0f;  
-	}  
+	}
+
+	public void UpdateMask()
+	{
+		if (maskCurrentTime > 0.0f && maskTotalTime > 0.0f)  
+		{  
+			float percent = maskCurrentTime / maskTotalTime;  
+  
+			maskCurrentTime -= Time.deltaTime;
+
+			if (m_mask != null && !m_mask.activeSelf)
+			{
+				m_mask.SetActive(true);
+			}
+		}  
+		else  
+		{  
+			maskCurrentTime = 0.0f;  
+			maskTotalTime = 0.0f;
+			if (m_mask != null && m_mask.activeSelf)
+			{
+				m_mask.SetActive(false);
+			}
+		}  
+	}
   
 	public void UpdateShake()  
 	{  
@@ -76,7 +115,8 @@ public class CameraControl : MonoBehaviour
   
 	void LateUpdate()  
 	{  
-		UpdateShake();  
+		UpdateShake();
+		UpdateMask();
 	}  
   
 	void OnEnable()  

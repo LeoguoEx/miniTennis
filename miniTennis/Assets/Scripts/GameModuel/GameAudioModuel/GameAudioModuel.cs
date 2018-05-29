@@ -127,8 +127,7 @@ public class GameAudioModuel : GameModuelBase
 
     private void PlayBgAudio(AudioClip clip)
     {
-        if(m_bgSource.clip == clip) { return; }
-        m_bgSource.clip = clip;
+	    m_bgSource.clip = clip;
         m_bgSource.Play();
     }
 

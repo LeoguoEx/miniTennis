@@ -121,8 +121,10 @@ public class GameBombState : GameStateBase
 
         if (m_bombUI != null)
         {
-            m_bombUI.SetPlayerLastTime(m_playerTotalBombTime - m_playerBombTime);
-            m_bombUI.SetAiLastTime(m_aiTotalBombTime - m_aiBombTime);
+            float value = (m_playerTotalBombTime - m_playerBombTime) / m_playerTotalBombTime;
+            m_bombUI.SetPlayerLastTime(m_playerTotalBombTime - m_playerBombTime, value);
+            value = (m_aiTotalBombTime - m_aiBombTime) / m_aiTotalBombTime;
+            m_bombUI.SetAiLastTime(m_aiTotalBombTime - m_aiBombTime, value);
         }
     }
 
@@ -234,6 +236,7 @@ public class GameBombState : GameStateBase
         if (checkIsHitArea)
         {
             CameraControl.GetInstance().Trigger();
+            CameraControl.GetInstance().TriggerMask();
 
             GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
             if (id == m_player.ID)
@@ -246,12 +249,7 @@ public class GameBombState : GameStateBase
                 
                 if (m_contestData != null && m_contestData.m_changeAudio && !m_change)
                 {
-                    List<string> list = new List<string>
-                    {
-                        "lerp",
-                        "BGM_tense",
-                    };
-                    audioModuel.PlayBgAudio(list);
+                    audioModuel.PlayBgAudio("BGM_tense");
                     m_change = true;
 
                 }

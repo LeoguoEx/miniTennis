@@ -7,7 +7,8 @@ public enum EEffectType
     Shield = 0,
     BananaBall = 1,
     //DisapearAndApear = 2,
-    MaxType = 2,
+    InkEffect = 2,
+    MaxType = 3,
 }
 
 public class GameEffect
@@ -33,7 +34,8 @@ public class GameEffect
         m_effectDic = new Dictionary<byte, EffectBase>
         {
             {(byte)EEffectType.Shield, new EffectShield(5f)},
-            {(byte)EEffectType.BananaBall, new EffectBananaBall(10f)}
+            {(byte)EEffectType.BananaBall, new EffectBananaBall(10f)},
+            {(byte)EEffectType.InkEffect, new EffectInk(6f)}
         };
         
         m_effectData = new GameEffectData();

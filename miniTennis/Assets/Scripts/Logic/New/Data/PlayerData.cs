@@ -32,7 +32,7 @@ public class PlayerData
         m_radius = 2.5f;
         m_angle = 180;
         m_moveSpeed = 0.03f;
-        m_firBallForceRange = new Vector2(7f, 13f);
+        m_firBallForceRange = new Vector2(10f, 16f);
         m_bornPosition = new Vector2(0f, -5.76f);
         m_fireBallAngleRange = 60f;
         m_playerMoveXRange = 1.5f;

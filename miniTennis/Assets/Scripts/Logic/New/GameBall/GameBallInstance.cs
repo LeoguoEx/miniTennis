@@ -133,6 +133,7 @@ public class GameBallInstance : MonoBehaviour
 			m_rigidBody.velocity = dir * force;
 		}
 
+		
 //		if (m_quick != null && m_mid != null && m_low != null)
 //		{
 //			m_low.gameObject.SetActive((force < 10));
@@ -206,31 +207,40 @@ public class GameBallInstance : MonoBehaviour
         }
     }
 
+	private bool m_bounce;
     private void CollisionEnter2D(Collision2D other)
     {
-        if(other == null) { return; }
-	    m_rigidBody.velocity = Vector3.zero;
-	    m_collision = other.contacts[0];
-	    
-	    ContactPoint2D contactPoint = m_collision;
-	    Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
-	    newDir.z = 0f;
-	    m_newDir = newDir;
-	    
-	    m_animator.Play("Empty");
-	    m_animator.Play("Bounce");
-	    
-	    m_rigidBody.velocity =Vector2.zero;
-
-        m_colliderName = other.gameObject.name;
-
-        StartCoroutine(Bounce());
+	    OnBounce(other);
     }
 
-	private IEnumerator Bounce()
+	private void OnCollisionStay2D(Collision2D other)
 	{
-		yield return new WaitForSeconds(0.04f);
+		if (!m_bounce)
+		{
+			OnBounce(other);
+		}
+	}
 
+	private void OnBounce(Collision2D other)
+	{
+		if(other == null) { return; }
+		m_collision = other.contacts[0];
+	    
+		ContactPoint2D contactPoint = m_collision;
+		Vector3 newDir = Vector3.Reflect(m_dir, contactPoint.normal);
+		newDir.z = 0f;
+		m_newDir = newDir;
+	    
+		m_animator.Play("Empty");
+		m_animator.Play("Bounce");
+
+		m_colliderName = other.gameObject.name;
+		Bounce();
+		m_bounce = true;
+	}
+
+	private void Bounce()
+	{
 	    if (m_bounceAction != null)
 	    {
 	        m_bounceAction(m_colliderName);
@@ -240,11 +250,11 @@ public class GameBallInstance : MonoBehaviour
         RotateToDirAngle(m_newDir);
         if (m_rigidBody != null)
 		{
+			m_rigidBody.velocity = Vector2.zero;
 			m_rigidBody.velocity = m_newDir.normalized * m_force;
 		}
 		m_dir = m_newDir;
 		
-		yield return new WaitForSeconds(0.4f);
 		transform.localScale = new Vector3(0.6f, 1f, 1f);
 	}
 

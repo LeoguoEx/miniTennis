@@ -213,6 +213,7 @@ public class GameContestState : GameStateBase
 	    if (checkIsHitArea)
 	    {
 		    CameraControl.GetInstance().Trigger();
+		    CameraControl.GetInstance().TriggerMask();
 
 		    GameAudioModuel audioModuel = GameStart.GetInstance().AudioModuel;
 		    if (id == m_player.ID)
@@ -291,26 +292,25 @@ public class GameContestState : GameStateBase
 			audioModuel.PlayAudio("lose");
 		}
 	}
-	
-	
+
+	private int m_index = 0;
 	private void OnTriggerEffectStart(GameEvent eve)
 	{
-		EEffectType[] types = CreateRandomEffectType();
-		int random = Random.Range(0, types.Length);
-		if (types.Length > 0)
+		List<EEffectType> types = CreateRandomEffectType();
+		EEffectType type = types[m_index];
+		//TODO:触发执行对应的事件
+
+		type = EEffectType.InkEffect;
+
+		EffectBase effect = m_effect.GetEffectData<EffectBase>(type);
+		if (effect != null)
 		{
-			EEffectType type = types[random];
-			//TODO:触发执行对应的事件
-
-			//type = EEffectType.BananaBall;
-
-			EffectBase effect = m_effect.GetEffectData<EffectBase>(type);
-			if (effect != null)
-			{
-				m_ground.ExcuteEffect(effect, m_side);
-				m_gameBall.ExcuteEffect(effect, m_side);
-			}
+			m_ground.ExcuteEffect(effect, m_side);
+			m_gameBall.ExcuteEffect(effect, m_side);
+			m_contestUI.PlayEffect(effect, m_side);
 		}
+
+		m_index++;
 	}
 
 	private void OnTriggerEffectEnd(GameEvent eve)
@@ -321,26 +321,44 @@ public class GameContestState : GameStateBase
 		}
 	}
 
-	private EEffectType[] CreateRandomEffectType()
+	private List<EEffectType> m_effectList;
+	private List<EEffectType> CreateRandomEffectType()
 	{
-		int count = (int)EEffectType.MaxType;
-		if (m_effect.PreEffectType != EEffectType.MaxType)
+		bool random = false;
+		if (m_effectList == null)
 		{
-			count--;
+			m_effectList = new List<EEffectType>();
+			random = true;
 		}
 
-		EEffectType[] types = new EEffectType[count];
-		int index = 0;
-		for (EEffectType i = 0; i < EEffectType.MaxType; i++)
+		if (!random && m_effectList.Count <= m_index)
 		{
-			if (m_effect.PreEffectType == i)
+			m_index = 0;
+			random = true;
+		}
+
+		if (random)
+		{
+			m_effectList.Clear();
+			for (EEffectType i = EEffectType.Shield; i < EEffectType.MaxType; i++)
 			{
-				continue;
+				m_effectList.Add(i);
 			}
 
-			types[index] = i;
+			m_effectList.Sort((type, effectType) =>
+			{
+				float value = Random.Range(0, 1);
+				if (value < 0.5f)
+				{
+					return -1;
+				}
+				else
+				{
+					return 1;
+				}
+			});
 		}
-
-		return types;
+		
+		return m_effectList;
 	}
 }
